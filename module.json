@@ -11,6 +11,6 @@
         "settingsVersion": 1,
         "settingsFile": "settings.json"
     },
-    "servers": [],
+    "servers": ["https://raw.githubusercontent.com/ApeironTsuka/discordbridge/master/"],
     "donationUrl": ""
 }
