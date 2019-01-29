@@ -1,7 +1,6 @@
 /*
   TODO
     maybe have !close work in private channels to leave them
-    generate manifest.json and finish module.json
 */
 /*
   test
