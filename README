@@ -1,0 +1,39 @@
+How to set up:
+
+Create a folder mods\discordbridge and place module.json in it
+Start Proxy
+Let it update/install this
+If it complains about S_PRIVATE_CHANNEL_NOTICE missing, add the line "S_PRIVATE_CHANNEL_NOTICE = 55697" to node_modules/tera-data/map/protocol.343312.map and hope the id hasn't changed since I last updated this
+It will complain that you haven't installed this correctly. That's normal
+Exit Proxy
+Open Discord proper (web or desktop, not mobile app)
+Go to Settings->Appearance and enable Developer Mode
+Right-click your name and click Copy ID
+Open discordbridge\discord\auth and paste the id on the owner line
+Turn Developer Mode back off
+Create a new server just for this. Not required by VERY HIGHLY recommended. I cannot stress how recommended it is
+Go to discordapp.com
+Log in if you aren't already
+At the top, hover Developers and click Developer Portal
+Click New Application on the right
+Name it something
+On the left, click the Bot tab
+Create a bot
+Click "Click To Reveal Token" and copy the token
+Open discordbridge\discord\auth and paste the token on the sekrit line
+Go to the General Information tab
+Copy the client ID
+Go to http://discordapp.com/api/oauth2/authorize?scope=bot&permissions=8&client_id=<paste the client ID here>
+Add the bot to the server you created earlier
+Open a Command Prompt
+cd path\to\wherever\you\have\proxy\installed
+cd mods\discordbridge\discord
+npm --global install windows-build-tools
+npm install he discord.js
+Assuming the above went okay, close Command Prompt
+Now you can start Proxy back up again
+It should work now
+
+Caveats:
+It's not multi-client friendly. Only the first connected client will be bridged to Discord. Any others will show the line "Only the first loaded TERA instance can use Discord". If you exit every client and then start a new one (so that it's the only running one at that moment), it will be the one bridged. I can't think of a good way to bridge multi-client in a sane way that doesn't require several Discord bot instances to match and yeah, too much work.
+

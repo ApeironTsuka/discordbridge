@@ -1,0 +1,16 @@
+{
+    "disableAutoUpdate": true,
+    "disabled": false,
+    "name": "Discord chat bridge",
+    "author": "Emonas / Apeiron",
+    "version": 1.0,
+    "description": "Bridges Tera's chats to a Discord server.",
+    "options": {
+        "niceName": "DiscordBridge",
+        "guiName": "Discord chat bridge",
+        "settingsVersion": 1,
+        "settingsFile": "settings.json"
+    },
+    "servers": [],
+    "donationUrl": ""
+}

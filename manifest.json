@@ -1,0 +1,41 @@
+{
+  "files": {
+    "discord/modules/main/core/triggers.js": "a84f7e6faab7253d2999981624ab19aa546407edd40e65ddcea9d09c21926938",
+    "discord/modules/main/core/data.js": "7c37ed4e1f9b4904738bf3044ad9fa10bb4dcf87ca8db095e41e6492f0b667c8",
+    "discord/modules/main/core/services.js": "23230553bc4f017c1e5091277798933408673e4393d4e2f592802dcf8e693cf0",
+    "discord/modules/main/core/dbs.js": "1e5e1b69cd0010747ed255bc44898ded136df64f5ccc0860b80d48dc542a7633",
+    "discord/modules/main/bridge.js": "8361c27dc485c8f2a750210ee7468fb7418456c7155932b0e1a0551e9925f4fb",
+    "discord/modules/main/system.js": "f9bb091960f5778123c3b4dbd5dc2aecaa1ee3dd50137bb8801fd0235c0a89a9",
+    "discord/modules/main/help.js": "3126755b155c17a3a96bb6f627adcb6983a55caefc89fd54bbfd9d77b270ccbc",
+    "discord/node_modules/tserv-modsupport/main.js": "35ff73d8abd604a1bf4042a74dc435c8dc4c6023e546a1016eaf95db686c05c5",
+    "discord/node_modules/tserv-modsupport/package.json": "0404205a09cbbae5499749684de2d0bda4497f75c80246d999f0231ad6401658",
+    "discord/node_modules/tserv-service/main.js": "dc0495931eb455241492c8cfe91aeee69cfb79c3883f3aa8622b4a51e7de4116",
+    "discord/node_modules/tserv-service/package.json": "a78ea2d58801c38d4a28b8cde313f7be4caeaad3c4986cb6a19239bf33959fe5",
+    "discord/main.js": "c0a8f035a0fce8724387efc2062afeb4d632d656a7ff2ff2bc2fba264c1e1221",
+    "discord/package-lock.json": "97999b6764a91696b2f1562162e94d5e6ab06f4e4f23468a609a381e3bb6216d",
+    "discord/services/api/bridge.js": "d66e2e6b5ca4fdb5dcdf458b9e0843dfba395b01a06dda679c01c6b7c0b587af",
+    "discord/package.json": "bcb6c44e96ed37a25a937ff5472eb12ccd0a22cecb0c848ab1c36329910ca274",
+    "services/api/bridge.js": "d66e2e6b5ca4fdb5dcdf458b9e0843dfba395b01a06dda679c01c6b7c0b587af",
+    "node_modules/tserv-service/main.js": "dc0495931eb455241492c8cfe91aeee69cfb79c3883f3aa8622b4a51e7de4116",
+    "index.js": "97c5a7c92b5d79ba3b889555355e516c49c33af86140f1eac4c2d4b2dd8b5adb",
+    "README": "9a9cb58d96a65a754d386802d6e738ad0343d18bdd6fb3163beaefa9cfb97436",
+    "module.json": "ead6bde07ce1ceb700fd719def3a629c4ded5ad29660cf19cac71ab806ed071d",
+    "node_modules/tserv-service/package.json": "a78ea2d58801c38d4a28b8cde313f7be4caeaad3c4986cb6a19239bf33959fe5"
+  },
+  "defs": {
+    "C_CHAT": 1,
+    "C_WHISPER": 1,
+    "S_CHAT": 2,
+    "S_WHISPER": 2,
+    "S_JOIN_PRIVATE_CHANNEL": 2,
+    "S_LEAVE_PRIVATE_CHANNEL": 2,
+    "S_PRIVATE_CHAT": 1,
+    "S_PRIVATE_CHANNEL_NOTICE": 2,
+    "S_PARTY_MEMBER_LIST": 7,
+    "S_LEAVE_PARTY": 1,
+    "S_LOGOUT_PARTY_MEMBER": 1,
+    "S_LEAVE_PARTY_MEMBER": 2,
+    "S_UPDATE_FRIEND_INFO": 1,
+    "S_SYSTEM_MESSAGE": 1
+  }
+}
