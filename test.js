@@ -156,10 +156,21 @@ vorpal
 vorpal.find('exit').remove();
 vorpal
   .command('exit', '')
-  .action(function (w, cb) { dispatchShim.inst.destructor(); setTimeout(() => process.exit(), 1000); });
+  .action(function (w, cb) {
+    if (fs.existsSync('discord/_auth')) {
+      fs.renameSync('discord/auth', 'discord/realauth');
+      fs.renameSync('discord/_auth', 'discord/auth');
+    }
+    dispatchShim.inst.destructor();
+    setTimeout(() => process.exit(), 1000);
+  });
 vorpal
   .command('init', '')
   .action(function (w, cb) {
+    if (!fs.existsSync('discord/_auth')) {
+      fs.renameSync('discord/auth', 'discord/_auth');
+      fs.renameSync('discord/realauth', 'discord/auth');
+    }
     let mod = require('./index.js');
     dispatchShim.inst = new mod(dispatchShim);
     cb();
