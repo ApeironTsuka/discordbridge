@@ -51,7 +51,7 @@ Proxy side:
   Start TERA and log into a character
   You should almost immediately start seeing things showing up on Discord!
   Use !help on Discord to get a list of available commands
-  Use /proxy discord [on/off] to turn the bridge on/off
+  Use /proxy discordbridge [on/off] to turn the bridge on/off
     Note that this setting is not currently saved and only silences the bridge rather than shutting it off entirely
 
 Caveats:

@@ -372,8 +372,8 @@ module.exports = function DiscordBridge(dispatch) {
     // if so, { id: 'SMT_CHAT_INPUTRESTRICTION_ERROR', tokens: {} }
     if ((event.message == '@3161') && (bridgeServer.lastSent)) { client.api.badSend(); }
   });
-  dispatch.command.add('discord', {
-    $default() { dispatch.command.message('Usage: discord [on/off]. Turns on/off using the bridge.'); },
+  dispatch.command.add('discordbridge', {
+    $default() { dispatch.command.message('Usage: discordbridge [on/off]. Turns on/off using the bridge.'); },
     on() {
       let { client } = bridgeServer;
       if (!client) { dispatch.command.message('No running Discord instance found'); return; }
