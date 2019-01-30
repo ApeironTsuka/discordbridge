@@ -1,8 +1,33 @@
 /*
   TODO
+    find TERA's max chat length and honor it
+    intentionally spam myself muted and see if the following sysmsgs are thrown how I expect them to
+      SMT_CHAT_PENALTY_START 894
+      SMT_CHAT_CANT_INPUT_IS_PENALTY 895
+      SMT_CHAT_CANCLE_PENALTY 896
     test S_PRIVATE_CHANNEL_NOTICE and S_SYSTEM_MESSAGE in actual Proxy to see how they behave
     maybe have !close work in private channels to leave them
     add !whisper so you can create whisper channels from the Discord side
+      watch for sysmsgs about offline/unknown characters etc
+        SMT_CHAT_CHARACTER_NONEXISTENT 965
+    maybe a way to make/join priv channels?
+      SMT_CHAT_CANT_MAKE_CHANNEL_IS_SAME_NAME 960
+      SMT_CHAT_CANT_MAKE_CHANNEL_IS_NAME 961
+      SMT_CHAT_PASSWORD_IS_FAIL 962
+      SMT_CAHT_CHANNEL_NAME_IS_NONEXISTENT 963
+      SMT_CHAT_CHANNEL_NUM_IS_FAIL 964
+      SMT_CHAT_CHARACTER_NONEXISTENT 965
+      SMT_CHAT_CANT_COMMAND_IS_PASSWORD_FAIL 966
+      SMT_CHAT_CANT_JOIN_CHANNEL_IS_LIMIT 967
+      SMT_CHAT_CANT_COMMAND_IS_UNAUTHORIZED 968
+      SMT_CHAT_CANT_JOIN_ENTRY_IS_LIMIT 969
+      SMT_CHAT_JOIN_CHANNEL 970
+      SMT_CHAT_BAN_CHANNEL 971
+      SMT_CHAT_EXIT_CHANNEL 972
+      SMT_CHAT_CANT_INPUT_PRIVATE 973
+      SMT_CHAT_DONT_JOIN_CHANNEL_PRIVATE 977
+      SMT_CHAT_JUST_INPUT_PASSWORD 978
+      SMT_CHAT_CHANGE_PASSWORD 979
 */
 /*
   test
@@ -370,7 +395,16 @@ module.exports = function DiscordBridge(dispatch) {
     // FIXME test with proper TERA
     // is it parsed before it gets here? I honestly don't know
     // if so, { id: 'SMT_CHAT_INPUTRESTRICTION_ERROR', tokens: {} }
-    if ((event.message == '@3161') && (bridgeServer.lastSent)) { client.api.badSend(); }
+    if (bridgeServer.lastSent) {
+      if (event.message == '@3161') { client.api.badSend(); }
+      // FIXME change the below to proper messages after the above test
+      //  SMT_CHAT_PENALTY_START 894
+      //  SMT_CHAT_CANT_INPUT_IS_PENALTY 895
+      //  SMT_CHAT_CANCLE_PENALTY 896
+      else if (event.message == 'start mute') { client.api.muted(true); }
+      else if (event.message == 'end mute') { client.api.muted(false); }
+      else if (event.message == 'muted msg') { client.api.muted(true, true); }
+    }
   });
   dispatch.command.add('discordbridge', {
     $default() { dispatch.command.message('Usage: discordbridge [on/off]. Turns on/off using the bridge.'); },

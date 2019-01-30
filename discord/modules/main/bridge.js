@@ -270,6 +270,12 @@ function setupProxy(bot) {
       let { lastSource } = bot._proxy;
       lastSource.send('The previous message was reject by the TERA server');
     });
+    this.api.on('muted', function (status, msg) {
+      if (status) {
+        if (!msg) { bot._proxy.lastSource.send('You\'ve been muted from chat. For shame.'); }
+        else { bot._proxy.lastSource.send('Shhh.. you\'re still muted.'); }
+      } else { bot._proxy.lastSource.send('Your mute has been lifted!'); }
+    });
   });
   bot._proxy.client = client;
   return Promise.resolve();
