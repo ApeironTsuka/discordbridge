@@ -1,38 +1,56 @@
 How to set up:
 
-Create a folder mods\discordbridge and place module.json in it
-Start Proxy
-Let it update/install this
-If it complains about S_PRIVATE_CHANNEL_NOTICE missing, add the line "S_PRIVATE_CHANNEL_NOTICE = 55697" to node_modules/tera-data/map/protocol.343312.map and hope the id hasn't changed since I last updated this
-It will complain that you haven't installed this correctly. That's normal
-Exit Proxy
-Open Discord proper (web or desktop, not mobile app)
-Go to Settings->Appearance and enable Developer Mode
-Right-click your name and click Copy ID
-Open discordbridge\discord\auth and paste the id on the owner line
-Turn Developer Mode back off
-Create a new server just for this. Not required by VERY HIGHLY recommended. I cannot stress how recommended it is
-Go to discordapp.com
-Log in if you aren't already
-At the top, hover Developers and click Developer Portal
-Click New Application on the right
-Name it something
-On the left, click the Bot tab
-Create a bot
-Click "Click To Reveal Token" and copy the token
-Open discordbridge\discord\auth and paste the token on the sekrit line
-Go to the General Information tab
-Copy the client ID
-Go to http://discordapp.com/api/oauth2/authorize?scope=bot&permissions=8&client_id=<paste the client ID here>
-Add the bot to the server you created earlier
-Open a Command Prompt
-cd path\to\wherever\you\have\proxy\installed
-cd mods\discordbridge\discord
-npm --global install windows-build-tools
-npm install he discord.js
-Assuming the above went okay, close Command Prompt
-Now you can start Proxy back up again
-It should work now
+Discord side:
+  Open Notepad
+  Open Discord proper (web or desktop, NOT mobile app)
+  Go to Settings->Appearance and enable Developer Mode
+  Right-click your name in a chat somewhere
+  At the bottom, click Copy ID, and paste it onto Notepad
+  Turn Developer Mode back off
+  Create a new Discord server just for this. Not required but VERY HIGHLY recommended. I cannot stress how recommended it is
+  Go to http://discordapp.com
+  Log in if you aren't already
+  At the top, hover over Developers and click Developer Portal
+  Click the New Application button on the right
+  Name it something. Doesn't matter what.
+  On the left, click the Bot tab
+  Create a bot using the Add Bot botton on the right
+  Click "Click To Reveal Token" and copy the token to Notepad
+  Go to the General Information tab on the left
+  Under Client ID, click the Copy button
+  Copy this link http://discordapp.com/api/oauth2/authorize?scope=bot&permissions=8&client_id= and paste client ID at the end, then go to it
+  Add the bot to the server you created earlier
+
+Proxy side:
+  Create the folder [proxy]\mods\discordbridge and place module.json in it
+  Start Proxy
+  Let it install/update this
+  If it complains about S_PRIVATE_CHANNEL_NOTICE missing, add the line "S_PRIVATE_CHANNEL_NOTICE = 55697" to [proxy]\node_modules\tera-data\map\protocol.343312.map and hope the ID hasn't changed since I last updated this
+  It will complain that you haven't installed this correct. That's normal
+  Exit Proxy
+  Open a Command Prompt and enter the following commands, in order. Replace [proxy] with wherever it is you have it installed (example C:\Caali Proxy\mods\discordbridge\discord)
+    cd [proxy]\mods\discordbridge\discord
+    npm --global install windows-build-tools
+    npm install he discord.js
+  Assuming the above went okay, close Command Prompt
+  Open [proxy]\mods\discordbridge\discord\auth
+  Paste the token and your client ID from Notepad into the "" for sekrit and owner
+  Start Proxy back up again
+  It shouldn't complain anymore
+  You should see the following lines:
+    [discord] Logging in..
+    [discord] connected 0
+    [discord] Loading bot id 0
+    [discord] loaded system
+    [discord] loaded help
+    [discord] Loading bot id <your new server's ID>
+    [discord] loaded system
+    [discord] loaded help
+    [discord] loaded bridge
+    [discord] Successfully logged in
+  Start TERA and log into a character
+  You should almost immediately start seeing things showing up on Discord!
+  Use !help to get a list of available commands
 
 Caveats:
 It's not multi-client friendly. Only the first connected client will be bridged to Discord. Any others will show the line "Only the first loaded TERA instance can use Discord". If you exit every client and then start a new one (so that it's the only running one at that moment), it will be the one bridged. I can't think of a good way to bridge multi-client in a sane way that doesn't require several Discord bot instances to match and yeah, too much work.

@@ -308,14 +308,14 @@ function load(bot) {
   })
   .then(() => setupProxy(bot))
   .catch((e) => { console.log(e); });
-  console.log('loaded thing');
+  console.log('loaded bridge');
 }
 
 function unload(bot) {
   bot._proxy.client.disconnect();
   bot.remTriggers(trigs);
   bot.off('message', handleMsgs);
-  console.log('unloaded thing');
+  console.log('unloaded bridge');
 }
 
 module.exports = {

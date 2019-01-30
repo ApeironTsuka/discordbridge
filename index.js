@@ -1,6 +1,8 @@
 /*
   TODO
+    test S_PRIVATE_CHANNEL_NOTICE and S_SYSTEM_MESSAGE in actual Proxy to see how they behave
     maybe have !close work in private channels to leave them
+    add !whisper so you can create whisper channels from the Discord side
 */
 /*
   test
