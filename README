@@ -50,7 +50,9 @@ Proxy side:
     [discord] Successfully logged in
   Start TERA and log into a character
   You should almost immediately start seeing things showing up on Discord!
-  Use !help to get a list of available commands
+  Use !help on Discord to get a list of available commands
+  Use /proxy discord [on/off] to turn the bridge on/off
+    Note that this setting is not currently saved and only silences the bridge rather than shutting it off entirely
 
 Caveats:
 It's not multi-client friendly. Only the first connected client will be bridged to Discord. Any others will show the line "Only the first loaded TERA instance can use Discord". If you exit every client and then start a new one (so that it's the only running one at that moment), it will be the one bridged. I can't think of a good way to bridge multi-client in a sane way that doesn't require several Discord bot instances to match and yeah, too much work.
