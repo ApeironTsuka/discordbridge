@@ -101,7 +101,15 @@ let trigs = {
   keepparty: function (m) {
     if ((!m.channel.permissionsFor(m.member).has('ADMINISTRATOR')) &&
         (this.auth.owner != m.author.id)) { m.reply('You don\'t have permission to do that'); return; }
-    this._proxy.settings.keepparty = (m.words[1]?!(m.words=='no'):true); this.saveData('settings', this._proxy.settings);
+    let { avail, settings, chanmap } = this._proxy, on = (m.words[1]?(!(m.words[1]=='no')):true), c = settings.keepparty;
+    if (on == c) { return; }
+    settings.keepparty = on;
+    this.saveData('settings', settings);
+    if (!on) {
+      let { party, raid } = avail;
+      if ((!party) && (chanmap.party)) { chanmap.party.delete(); delete chanmap.party; saveChanmap(bot); }
+      if ((!raid) && (chanmap.raid)) { chanmap.raid.delete(); delete chanmap.raid; saveChanmap(bot); }
+    }
   }
 };
 function saveChanmap(bot) {
