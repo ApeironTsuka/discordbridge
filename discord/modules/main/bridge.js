@@ -271,7 +271,7 @@ function load(bot) {
   bot.on('message', handleMsgs);
   bot._proxy = { privs: {}, avail: { party: false, raid: false } };
   try { bot._proxy.settings = bot.loadData('settings'); }
-  catch (e) { bot._proxy.settings = { keepparty: false, enabled: { say: true, area: true, party: true, raid: true, guild: true, trade: true, global: true, privates: true, whispers: true, friends: true } }; bot.saveData('settings', bot._proxy.settings); }
+  catch (e) { bot._proxy.settings = { keepparty: true, enabled: { say: true, area: true, party: true, raid: true, guild: true, trade: true, global: true, privates: true, whispers: true, friends: true } }; bot.saveData('settings', bot._proxy.settings); }
   setupServer(bot)
   .then((chanmap) => {
     let saveMap = false;
