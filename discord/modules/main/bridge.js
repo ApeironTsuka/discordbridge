@@ -312,7 +312,7 @@ function setupProxy(bot) {
       if (!chanmap[channel]) { return; }
       chanmap[channel].__muted = status;
       if (status) { chanmap[channel].send('You\'ve been muted from this chat. For shame.'); }
-      else { chanmap[channel].send('Your muted has been lifted!'); }
+      else { chanmap[channel].send('Your mute has been lifted!'); }
     });
   });
   bot._proxy.client = client;
