@@ -26,6 +26,7 @@ Proxy side:
   Start Proxy
   Let it install/update this
   If it complains about S_PRIVATE_CHANNEL_NOTICE missing, add the line "S_PRIVATE_CHANNEL_NOTICE = 55697" to [proxy]\node_modules\tera-data\map\protocol.343312.map and hope the ID hasn't changed since I last updated this
+  If it complains about S_CHAT_RESTRICTION missing, add the line "S_CHAT_RESTRICTION = 42392" to [proxy]\node_modules\tera-data\map\protocol.343312.map and hope the ID hasn't changed since I last updated this, as well as copying extra\S_CHAT_RESTRICTION.1.def to [proxy]\node_modules\tera-data\protocol
   It will complain that you haven't installed this correct. That's normal
   Exit Proxy
   Open a Command Prompt and enter the following commands, in order. Replace [proxy] with wherever it is you have it installed (example C:\Caali Proxy\mods\discordbridge\discord)

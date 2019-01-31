@@ -154,6 +154,7 @@ function handleMsgs(m) {
   let type = findChanType(this, m.channel.id);
   if (type === undefined) { return; }
   switch (m.channel.name) { case 'party': case 'raid': if (!this._proxy.avail[m.channel.name]) { return; } }
+  if (m.channel.__muted) { m.channel.send('Shh, you\'re still muted'); return; }
   this._proxy.client.api.sendMessage(type, m.channel.name, `<FONT>${he.encode(m.cleanContent)}</FONT>`);
   this._proxy.lastSource = m.channel;
 }
@@ -270,11 +271,12 @@ function setupProxy(bot) {
       let { lastSource } = bot._proxy;
       lastSource.send('The previous message was reject by the TERA server');
     });
-    this.api.on('muted', function (status, msg) {
-      if (status) {
-        if (!msg) { bot._proxy.lastSource.send('You\'ve been muted from chat. For shame.'); }
-        else { bot._proxy.lastSource.send('Shhh.. you\'re still muted.'); }
-      } else { bot._proxy.lastSource.send('Your mute has been lifted!'); }
+    this.api.on('muted', function (channel, status) {
+      let { settings, chanmap } = bot._proxy, { enabled } = settings;
+      if (!chanmap[channel]) { return; }
+      chanmap[channel].__muted = status;
+      if (status) { chanmap[channel].send('You\'ve been muted from this chat. For shame.'); }
+      else { chanmap[channel].send('Your muted has been lifted!'); }
     });
   });
   bot._proxy.client = client;

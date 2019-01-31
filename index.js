@@ -389,6 +389,11 @@ module.exports = function DiscordBridge(dispatch) {
     if (!client) { return; }
     flManager.update(event);
   });
+  dispatch.hook('S_CHAT_RESTRICTION', 1, (event) => {
+    let { client } = bridgeServer;
+    if (!client) { return; }
+    client.api.muted(idToChan(event.channel), event.status);
+  });
   dispatch.hook('S_SYSTEM_MESSAGE', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
@@ -397,13 +402,6 @@ module.exports = function DiscordBridge(dispatch) {
     // if so, { id: 'SMT_CHAT_INPUTRESTRICTION_ERROR', tokens: {} }
     if (bridgeServer.lastSent) {
       if (event.message == '@3161') { client.api.badSend(); }
-      // FIXME change the below to proper messages after the above test
-      //  SMT_CHAT_PENALTY_START 894
-      //  SMT_CHAT_CANT_INPUT_IS_PENALTY 895
-      //  SMT_CHAT_CANCLE_PENALTY 896
-      else if (event.message == 'start mute') { client.api.muted(true); }
-      else if (event.message == 'end mute') { client.api.muted(false); }
-      else if (event.message == 'muted msg') { client.api.muted(true, true); }
     }
   });
   dispatch.command.add('discordbridge', {
