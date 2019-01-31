@@ -4,7 +4,7 @@ let trigs = {
   /* HELP
   ## DESC Disable+delete a channel
   ## CMD #PREFIX#disable <channel>
-  ## ADMIN
+  ## OWNER
   ## ARGS
   ##   <channel> - One of the following: say, area, party, raid, guild, trade, global, whispers, privates, friends
   ##   Disabling whispers will disable all whispers
@@ -42,7 +42,7 @@ let trigs = {
   /* HELP
   ## DESC Enable+create a channel
   ## CMD #PREFIX#enable <channel>
-  ## ADMIN
+  ## OWNER
   ## ARGS
   ##   <channel> - One of the following: say, area, party, raid, guild, trade, global, whispers, privates, friends
   ##   Enabling whispers will enable all whispers
@@ -79,7 +79,7 @@ let trigs = {
   /* HELP
   ## DESC Close a whisper channel
   ## CMD #PREFIX#close
-  ## ADMIN
+  ## OWNER
   */
   close: function (m) {
     if (this.auth.owner != m.author.id) { m.reply('You don\'t have permission to do that'); return; }
@@ -90,7 +90,7 @@ let trigs = {
   /* HELP
   ## DESC Keep party/raid channels when not in a party/raid
   ## CMD #PREFIX#keepparty <yes/no>
-  ## ADMIN
+  ## OWNER
   ## ARGS
   ##   <yes/no> - Anything other than 'no' counts as 'yes'
   ## ENDARGS
@@ -110,7 +110,7 @@ let trigs = {
   /* HELP
   ## DESC Open a new whisper channel and optionally send a message to it
   ## CMD #PREFIX#whisper <name> [message]
-  ## ADMIN
+  ## OWNER
   ## ARGS
   ##   <name> - Who to send the whisper to
   ##   [message] - The message to send, if any
