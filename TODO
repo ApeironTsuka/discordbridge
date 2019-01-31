@@ -1,4 +1,3 @@
-find TERA's max chat length and honor it
 maybe have !close work in private channels to leave them
 add !whisper so you can create whisper channels from the Discord side
   watch for sysmsgs about offline/unknown characters etc

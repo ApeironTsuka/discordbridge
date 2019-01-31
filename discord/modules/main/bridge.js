@@ -155,7 +155,11 @@ function handleMsgs(m) {
   if (type === undefined) { return; }
   switch (m.channel.name) { case 'party': case 'raid': if (!this._proxy.avail[m.channel.name]) { return; } }
   if (m.channel.__muted) { m.channel.send('Shh, you\'re still muted'); return; }
-  this._proxy.client.api.sendMessage(type, m.channel.name, `<FONT>${he.encode(m.cleanContent)}</FONT>`);
+  if (m.cleanContent.length > 300) {
+    let m = m.cleanContent.substr(0,300);
+    this._proxy.client.api.sendMessage(type, m.channel.name, `<FONT>${he.encode(m)}</FONT>`);
+    m.channel.send(`Max message length (300) exceeded. Only sent: ${m}`);
+  } else { this._proxy.client.api.sendMessage(type, m.channel.name, `<FONT>${he.encode(m.cleanContent)}</FONT>`); }
   this._proxy.lastSource = m.channel;
 }
 function setupServer(bot) {
