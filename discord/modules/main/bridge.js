@@ -129,7 +129,7 @@ let trigs = {
         if (!sendMsg(client, type, n, msg)) {
           msg = msg.substr(0, 300);
           m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
-        }
+        } else { m.channel.send(`Sent: ${msg}`); }
         bot._proxy.lastSource = m.channel;
       }
     });
