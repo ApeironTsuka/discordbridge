@@ -19,20 +19,3 @@ maybe a way to make/join priv channels?
   SMT_CHAT_JUST_INPUT_PASSWORD 978
   SMT_CHAT_CHANGE_PASSWORD 979
 
-
-
-test
-  discord (create something similar to overseer-cli for this...)
-    whisper handling
-      create channel
-      message to/from
-    priv handling
-      create/destroy channel
-      message to/from
-    !enable/!disable/!close/!keepparty
-    party/raid notice
-    party/raid status changes
-    party/raid join/leave/online/offline messages
-    friendlist online/offline/busy messages
-  bridge (try to isolate what's possible *outside* of Proxy because that would be significantly easier)
-    all the things

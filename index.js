@@ -177,7 +177,7 @@ class PartyManager {
     this.list.rem(pid);
     this.cb([ { ev: 'left', id: t.playerId, name: t.name } ]);
   }
-  clear() { this.cb = undefined; this.list.length = 0; this.type = 'none'; }
+  clear() { this.list.length = 0; this.type = 'none'; }
 }
 module.exports = function DiscordBridge(dispatch) {
   if (bridgeServer.running) { console.log('Only the first loaded TERA instance can use Discord'); return; }
@@ -263,7 +263,7 @@ module.exports = function DiscordBridge(dispatch) {
   dispatch.hook('S_PRIVATE_CHANNEL_NOTICE', 2, (event) => {
     let { client } = bridgeServer, ev = event.event;
     if (!client) { return; }
-    ev = this.parseSystemMessage(`@${ev}`);
+    ev = dispatch.parseSystemMessage(`@${ev}`);
     switch (ev.id) {
       case 'SMT_PRIVATE_CHANNEL_ENTER':
         client.api.privNotice(privs.ids[event.channelId].name, 'enter', event.name);
@@ -347,7 +347,7 @@ module.exports = function DiscordBridge(dispatch) {
   dispatch.hook('S_SYSTEM_MESSAGE', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
-    let message = this.parseSystemMessage(event.message);
+    let message = dispatch.parseSystemMessage(event.message);
     if (bridgeServer.lastSent !== false) {
       if (message.id == 'SMT_CHAT_INPUTRESTRICTION_ERROR') { client.api.badSend(); }
       else if ((message.id == 'SMT_GENERAL_NOT_IN_THE_WORLD') && (bridgeServer.lastSent == client.api.types.WHISP)) { client.api.noExist(); }

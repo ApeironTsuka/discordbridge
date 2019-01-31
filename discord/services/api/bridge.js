@@ -21,7 +21,7 @@ class proxyClientApi extends EventEmitter {
     emitter.on('fl update', function (d) { api.emit('fl update', d.upd); });
     emitter.on('bad send', function () { api.emit('bad send'); });
     emitter.on('no exist', function () { api.emit('no exist'); });
-    emitter.on('muted', function (d) { api.amit('muted', d.status, d.msg); });
+    emitter.on('muted', function (d) { api.emit('muted', d.status, d.msg); });
     this.types = types;
   }
   sendMessage(type, target, msg) { this.emitter.send({ event: 'msg', data: { type, target, msg }, replyExpected: false }); }

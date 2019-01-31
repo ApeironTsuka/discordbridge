@@ -4,8 +4,9 @@ const serviceEmitter = require('tserv-service').serviceEmitter,
 
 let dispatchShim = {
   hook: function (p, v, cb) { dispatchShim.cbs[p] = cb; },
-  toServer: function (...args) { console.log(args); },
+  toServer: function (...args) { console.log(args); setTimeout(() => doStuffWith(args), 1); },
   settings: { party: false, raid: false },
+  parseSystemMessage(m) { return m; },
   cbs: {},
   game: { me: { name: 'Testperson' } },
   command: { add: function () {} },
@@ -29,6 +30,18 @@ let flPackets = [
   { id: 'S_UPDATE_FRIEND_INFO', friends: [ { id: 1, name: 'Badnets', status: 2 } ] }
 ];
 
+function doStuffWith([ packet, ver, data ]) {
+  switch (packet) {
+    case 'C_WHISPER':
+      if (data.target.toLowerCase() == 'emonas') {
+        dispatchShim.cbs['S_SYSTEM_MESSAGE']({
+          id: 'S_SYSTEM_MESSAGE',
+          message: { id: 'SMT_GENERAL_NOT_IN_THE_WORLD' }
+        });
+      }
+    break;
+  }
+}
 vorpal
   .command('test [what]', '')
   .action(function (w, cb) {
@@ -52,7 +65,7 @@ vorpal
         }
         break;
       case 'badmsg':
-        dispatchShim.cbs['S_SYSTEM_MESSAGE']({ message: '@3161' });
+        dispatchShim.cbs['S_SYSTEM_MESSAGE']({ message: { id: 'SMT_CHAT_INPUTRESTRICTION_ERROR' } });
         cb();
         break;
       default: console.log(`Unknown test ${w.what}`); cb(); return;
@@ -152,7 +165,24 @@ vorpal
     }
     cb();
   });
-
+vorpal
+  .command('mute [channel] [enabled]', '')
+  .action(function (w, cb) {
+    let channel = false;
+    switch (w.channel) {
+      case 'say': channel = 0; break;
+      case 'party': channel = 1; break;
+      case 'guild': channel = 2; break;
+      case 'area': channel = 3; break;
+      case 'trade': channel = 4; break;
+      case 'raid': channel = 25; break;
+      case 'global': channel = 27; break;
+      default: console.log(`Unknown message target "${w.target}"`); break;
+    }
+    if (channel === false) { cb(); return; }
+    dispatchShim.cbs['S_CHAT_RESTRICTION']({ channel, status: w.enabled=='on' });
+    cb();
+  });
 vorpal.find('exit').remove();
 vorpal
   .command('exit', '')

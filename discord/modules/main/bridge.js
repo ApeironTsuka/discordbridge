@@ -28,7 +28,7 @@ let trigs = {
           for (let i = 0, list = chanmap.privates, l = list.length; i < l; i++) { list[i].delete(); }
           chanmap.privates.length = 0;
         } else if (c != 'friends') {
-          chanmap[c].delete();
+          if (chanmap[c]) { chanmap[c].delete(); }
           delete chanmap[c];
         }
         saveChanmap(this);
@@ -62,13 +62,12 @@ let trigs = {
         if (c == 'privates') {
           for (let i = 0, list = this._proxy.priv, keys = Object.keys(list), l = keys.length; i < l; i++) {
             this.server.createChannel(keys[i], 'text')
-            .then((c) => { chanmap['private'][keys[i]] = c; return c.setParent(chanmap.privates); });
+            .then((c) => { chanmap['private'][keys[i]] = c; saveChanmap(this); return c.setParent(chanmap.privates); });
           }
         } else if ((c != 'whispers') && (c != 'friends')) {
           this.server.createChannel(c, 'text')
-          .then((ch) => { chanmap[c] = ch; return ch.setParent(chanmap.chats); });
+          .then((ch) => { chanmap[c] = ch; saveChanmap(this); return ch.setParent(chanmap.chats); });
         }
-        saveChanmap(this);
         break;
       default:
         if (c == '') { m.channel.send('No channel provided'); }
@@ -121,16 +120,17 @@ let trigs = {
     let { chanmap, settings, client } = this._proxy, { words } = m;
     if (!settings.enabled.whispers) { m.reply('Whisper channels are currently disabled'); return; }
     if (words.length < 2) { m.reply('Who do you want to whisper?'); return; }
-    findWhisp(this, words[1])
+    let n = words[1];
+    findWhisp(this, n)
     .then((c) => {
       if (words.length >= 3) {
-        words.unshift(); words.unshift();
+        words.shift(); words.shift();
         let msg = words.join(' ');
-        if (!sendMsg(client, type, n, msg)) {
+        if (!sendMsg(client, client.api.types.WHISP, n, msg)) {
           msg = msg.substr(0, 300);
-          m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
-        } else { m.channel.send(`Sent: ${msg}`); }
-        bot._proxy.lastSource = m.channel;
+          c.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
+        } else { c.send(`Sent: ${msg}`); }
+        this._proxy.lastSource = c;
       }
     });
   }
@@ -182,7 +182,7 @@ function handleMsgs(m) {
   }
   let type = findChanType(this, m.channel.id);
   if (type === undefined) { return; }
-  switch (m.channel.name) { case 'party': case 'raid': if (!this._proxy.avail[m.channel.name]) { return; } }
+  switch (m.channel.name) { case 'party': case 'raid': if (!this._proxy.avail[m.channel.name]) { m.channel.send(`You are not in a ${m.channel.name}`); } }
   if (m.channel.__muted) { m.channel.send('Shh, you\'re still muted'); return; }
   if (!sendMsg(this._proxy.client, type, m.channel.name, m.cleanContent)) {
     let msg = m.cleanContent.substr(0,300);
@@ -215,7 +215,7 @@ function setupServer(bot) {
 function setupProxy(bot) {
   let client = new serviceEmitter();
   client.setIdentifier('id');
-  client.connectToP('proxy', process.argv[2]);
+  client.connectToP('bridge', process.argv[2]);
   client.on('ready', function () {
     this.loadApi();
     this.api.on('msg', function (type, target, from, msg) {
@@ -348,7 +348,7 @@ function load(bot) {
       if (!chanmap[keys[i]]) { out += keys[i]; }
     }
     if (out != '') {
-      out = `Missing the following enabled channels:\n${out}\nTo correct this, use ${bot.triggerPrefix}disable <name> and then ${bot.triggerPrefix}enable <name>`;
+      out = `Missing the following enabled channels:\n${out}\nTo correct this:\n  Delete the channel(s) (if exists)\n  ${bot.triggerPrefix}disable <name>\n  ${bot.triggerPrefix}enable <name>`;
       if (chanmap.status) { chanmap.status.send(out); }
       else { console.log(out); }
     }
@@ -371,9 +371,9 @@ function unload(bot) {
 }
 
 module.exports = {
-  name: 'thing', // FIXME
+  name: 'Bridge', // FIXME
   version: '1.0',
-  desc: '',
+  desc: 'Bridge between Caali\'s Proxy and Discord',
   depends: [ 'Core-Triggers' ],
   load,
   unload
