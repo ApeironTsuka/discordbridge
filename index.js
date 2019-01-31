@@ -1,11 +1,6 @@
 /*
   TODO
     find TERA's max chat length and honor it
-    intentionally spam myself muted and see if the following sysmsgs are thrown how I expect them to
-      SMT_CHAT_PENALTY_START 894
-      SMT_CHAT_CANT_INPUT_IS_PENALTY 895
-      SMT_CHAT_CANCLE_PENALTY 896
-    test S_PRIVATE_CHANNEL_NOTICE and S_SYSTEM_MESSAGE in actual Proxy to see how they behave
     maybe have !close work in private channels to leave them
     add !whisper so you can create whisper channels from the Discord side
       watch for sysmsgs about offline/unknown characters etc
@@ -311,10 +306,8 @@ module.exports = function DiscordBridge(dispatch) {
   dispatch.hook('S_PRIVATE_CHANNEL_NOTICE', 2, (event) => {
     let { client } = bridgeServer, ev = event.event;
     if (!client) { return; }
-    // FIXME test with proper TERA
-    // Because I'm not sure if this is parsed before it gets here
-    if (typeof ev != 'string') { ev = dispatch.sysmsgMap.code.get(parseInt(ev)); }
-    switch (ev) {
+    ev = this.parseSystemMessage(`@${ev}`);
+    switch (ev.id) {
       case 'SMT_PRIVATE_CHANNEL_ENTER':
         client.api.privNotice(privs.ids[event.channelId].name, 'enter', event.name);
         break;
@@ -397,11 +390,9 @@ module.exports = function DiscordBridge(dispatch) {
   dispatch.hook('S_SYSTEM_MESSAGE', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
-    // FIXME test with proper TERA
-    // is it parsed before it gets here? I honestly don't know
-    // if so, { id: 'SMT_CHAT_INPUTRESTRICTION_ERROR', tokens: {} }
+    let message = this.parseSystemMessage(event.message);
     if (bridgeServer.lastSent) {
-      if (event.message == '@3161') { client.api.badSend(); }
+      if (message.id == 'SMT_CHAT_INPUTRESTRICTION_ERROR') { client.api.badSend(); }
     }
   });
   dispatch.command.add('discordbridge', {
