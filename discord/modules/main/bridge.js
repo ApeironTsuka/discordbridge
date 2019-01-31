@@ -14,8 +14,7 @@ let trigs = {
   */
   disable: function (m) {
     let chanmap = this._proxy.chanmap, settings = this._proxy.settings, c = (m.words[1]?m.words[1].toLowerCase():'');
-    if ((!m.channel.permissionsFor(m.member).has('ADMINISTRATOR')) &&
-        (this.auth.owner != m.author.id)) { m.reply('You don\'t have permission to do that'); return; }
+    if (this.auth.owner != m.author.id) { m.reply('You don\'t have permission to do that'); return; }
     switch (c) {
       case 'say': case 'area': case 'party': case 'raid': case 'guild':
       case 'trade': case 'global': case 'whispers': case 'privates': case 'friends':
@@ -53,8 +52,7 @@ let trigs = {
   */
   enable: function (m) {
     let chanmap = this._proxy.chanmap, settings = this._proxy.settings, c = (m.words[1]?m.words[1].toLowerCase():'');
-    if ((!m.channel.permissionsFor(m.member).has('ADMINISTRATOR')) &&
-        (this.auth.owner != m.author.id)) { m.reply('You don\'t have permission to do that'); return; }
+    if (this.auth.owner != m.author.id) { m.reply('You don\'t have permission to do that'); return; }
     switch (c) {
       case 'say': case 'area': case 'party': case 'raid': case 'guild':
       case 'trade': case 'global': case 'privates': case 'whispers': case 'friends':
@@ -84,23 +82,21 @@ let trigs = {
   ## ADMIN
   */
   close: function (m) {
-    if ((!m.channel.permissionsFor(m.member).has('ADMINISTRATOR')) &&
-        (this.auth.owner != m.author.id)) { m.reply('You don\'t have permission to do that'); return; }
+    if (this.auth.owner != m.author.id) { m.reply('You don\'t have permission to do that'); return; }
     for (let i = 0, list = this._proxy.chanmap.whispers, l = list.length; i < l; i++) {
       if (m.channel.id == list[i].id) { m.channel.delete(); list.splice(i, 1); saveChanmap(this); break; }
     }
   },
   /* HELP
   ## DESC Keep party/raid channels when not in a party/raid
-  ## CMD #PREFIX#keepparty
+  ## CMD #PREFIX#keepparty <yes/no>
   ## ADMIN
   ## ARGS
   ##   <yes/no> - Anything other than 'no' counts as 'yes'
   ## ENDARGS
   */
   keepparty: function (m) {
-    if ((!m.channel.permissionsFor(m.member).has('ADMINISTRATOR')) &&
-        (this.auth.owner != m.author.id)) { m.reply('You don\'t have permission to do that'); return; }
+    if (this.auth.owner != m.author.id) { m.reply('You don\'t have permission to do that'); return; }
     let { avail, settings, chanmap } = this._proxy, on = (m.words[1]?(!(m.words[1]=='no')):true), c = settings.keepparty;
     if (on == c) { return; }
     settings.keepparty = on;
@@ -110,6 +106,32 @@ let trigs = {
       if ((!party) && (chanmap.party)) { chanmap.party.delete(); delete chanmap.party; saveChanmap(bot); }
       if ((!raid) && (chanmap.raid)) { chanmap.raid.delete(); delete chanmap.raid; saveChanmap(bot); }
     }
+  },
+  /* HELP
+  ## DESC Open a new whisper channel and optionally send a message to it
+  ## CMD #PREFIX#whisper <name> [message]
+  ## ADMIN
+  ## ARGS
+  ##   <name> - Who to send the whisper to
+  ##   [message] - The message to send, if any
+  ## ENDARGS
+  */
+  whisper: function (m) {
+    if (this.auth.owner != m.author.id) { m.reply('You don\'t have permission to do that'); return; }
+    let { chanmap, settings, client } = this._proxy, { words } = m;
+    if (!settings.enabled.whispers) { m.reply('Whisper channels are currently disabled'); return; }
+    if (words.length < 2) { m.reply('Who do you want to whisper?'); return; }
+    findWhisp(this, words[1])
+    .then((c) => {
+      if (words.length >= 3) {
+        words.unshift(); words.unshift();
+        let msg = words.join(' ');
+        if (!sendMsg(client, type, n, msg)) {
+          msg = msg.substr(0, 300);
+          m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
+        }
+      }
+    });
   }
 };
 function saveChanmap(bot) {
@@ -144,6 +166,12 @@ function findChanType(bot, id) {
   for (let i = 0, list = chanmap['privates'], l = list.length; i < l; i++) { if (list[i].id == id) { return types.PRIV; } }
   return undefined;
 }
+function sendMsg(client, type, target, msg) {
+  let ret = true, m = msg;
+  if (m.length > 300) { m = m.substr(0, 300); ret = false; }
+  client.api.sendMessage(type, target, `<FONT>${he.encode(m)}</FONT>`);
+  return ret;
+}
 function handleMsgs(m) {
   let words = m.cleanContent.replace(/  */g, ' ').replace(/^ /, '').replace(/ $/, '').split(/ /), trigger = words[0], k = this.triggerPrefix;
   if (this.auth.owner != m.author.id) { return; }
@@ -155,11 +183,10 @@ function handleMsgs(m) {
   if (type === undefined) { return; }
   switch (m.channel.name) { case 'party': case 'raid': if (!this._proxy.avail[m.channel.name]) { return; } }
   if (m.channel.__muted) { m.channel.send('Shh, you\'re still muted'); return; }
-  if (m.cleanContent.length > 300) {
-    let m = m.cleanContent.substr(0,300);
-    this._proxy.client.api.sendMessage(type, m.channel.name, `<FONT>${he.encode(m)}</FONT>`);
-    m.channel.send(`Max message length (300) exceeded. Only sent: ${m}`);
-  } else { this._proxy.client.api.sendMessage(type, m.channel.name, `<FONT>${he.encode(m.cleanContent)}</FONT>`); }
+  if (!sendMsg(this._proxy.client, type, m.channel.name, m.cleanContent)) {
+    let msg = m.cleanContent.substr(0,300);
+    m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
+  }
   this._proxy.lastSource = m.channel;
 }
 function setupServer(bot) {
