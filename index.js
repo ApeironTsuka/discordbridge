@@ -21,16 +21,16 @@ function attachEvents(c) {
           default: return;
         }
         prox.dispatch.toServer('C_CHAT', 1, { channel, message });
-        bridgeServer.lastSent = true;
+        bridgeServer.lastSent = d.type;
         break;
       case types.WHISP:
         prox.dispatch.toServer('C_WHISPER', 1, { target, message });
-        bridgeServer.lastSent = true;
+        bridgeServer.lastSent = d.type;
         break;
       case types.PRIV:
         if (!bridgeServer.privs.names[target]) { return; }
         prox.dispatch.toServer('C_CHAT', 1, { channel: 11+bridgeServer.privs.names[target].ind, message });
-        bridgeServer.lastSent = true;
+        bridgeServer.lastSent = d.type;
         break;
       default: return;
     }
@@ -348,8 +348,9 @@ module.exports = function DiscordBridge(dispatch) {
     let { client } = bridgeServer;
     if (!client) { return; }
     let message = this.parseSystemMessage(event.message);
-    if (bridgeServer.lastSent) {
+    if (bridgeServer.lastSent !== false) {
       if (message.id == 'SMT_CHAT_INPUTRESTRICTION_ERROR') { client.api.badSend(); }
+      else if ((message.id == 'SMT_GENERAL_NOT_IN_THE_WORLD') && (bridgeServer.lastSent == client.api.types.WHISP)) { client.api.noExist(); }
     }
   });
   dispatch.command.add('discordbridge', {

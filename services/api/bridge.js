@@ -20,6 +20,7 @@ class proxyClientApi extends EventEmitter {
     emitter.on('party update', function (d) { api.emit('party update', d.upd); });
     emitter.on('fl update', function (d) { api.emit('fl update', d.upd); });
     emitter.on('bad send', function () { api.emit('bad send'); });
+    emitter.on('no exist', function () { api.emit('no exist'); });
     emitter.on('muted', function (d) { api.amit('muted', d.status, d.msg); });
     this.types = types;
   }
@@ -43,6 +44,7 @@ class proxyServerApi extends EventEmitter {
   partyUpdate(upd) { this.emitter.send({ event: 'party update', data: { upd }, replyExpected: false }); }
   flUpdate(upd) { this.emitter.send({ event: 'fl update', data: { upd }, replyExpected: false }); }
   badSend() { this.emitter.send({ event: 'bad send', data: {}, replyExpected: false }); }
+  noExist() { this.emitter.send({ event: 'no exist', data: {}, replyExpected: false }); }
   muted(status, msg) { this.emitter.send({ event: 'muted', data: { status, msg }, replyExpected: false }); }
   silence() {
     this.emitter._send = this.emitter.send;

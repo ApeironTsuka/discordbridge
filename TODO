@@ -1,8 +1,6 @@
 maybe have !close work in private channels to leave them
-add !whisper so you can create whisper channels from the Discord side
-  watch for sysmsgs about offline/unknown characters etc
-    SMT_CHAT_CHARACTER_NONEXISTENT 965
 maybe a way to make/join priv channels?
+  If any of these are actually used... haven't been having good luck with guessing what SMTs are in use
   SMT_CHAT_CANT_MAKE_CHANNEL_IS_SAME_NAME 960
   SMT_CHAT_CANT_MAKE_CHANNEL_IS_NAME 961
   SMT_CHAT_PASSWORD_IS_FAIL 962

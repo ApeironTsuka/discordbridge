@@ -130,6 +130,7 @@ let trigs = {
           msg = msg.substr(0, 300);
           m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
         }
+        bot._proxy.lastSource = m.channel;
       }
     });
   }
@@ -301,6 +302,10 @@ function setupProxy(bot) {
     this.api.on('bad send', function () {
       let { lastSource } = bot._proxy;
       lastSource.send('The previous message was reject by the TERA server');
+    });
+    this.api.on('no exist', function () {
+      let { lastSource } = bot._proxy;
+      lastSource.send('This character is not online');
     });
     this.api.on('muted', function (channel, status) {
       let { settings, chanmap } = bot._proxy, { enabled } = settings;
