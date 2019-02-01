@@ -339,7 +339,7 @@ module.exports = function DiscordBridge(dispatch) {
     if (!client) { return; }
     flManager.update(event);
   });
-  dispatch.hook('S_CHAT_RESTRICTED', 1, (event) => {
+  dispatch.hook('S_MUTE', 2, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     client.api.muted(idToChan(event.channel), event.status);
