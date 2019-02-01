@@ -29,7 +29,7 @@ Proxy side:
   Open a Command Prompt and enter the following commands, in order. Replace [proxy] with wherever it is you have it installed (example C:\Caali Proxy\mods\discordbridge\discord)
     cd [proxy]\mods\discordbridge\discord
     npm --global install windows-build-tools
-    npm install he discord.js
+    npm install
   Assuming the above went okay, close Command Prompt
   Open [proxy]\mods\discordbridge\discord\auth
   Paste the token and your client ID from Notepad into the "" for sekrit and owner
