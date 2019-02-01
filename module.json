@@ -1,5 +1,5 @@
 {
-    "disableAutoUpdate": true,
+    "disableAutoUpdate": false,
     "disabled": false,
     "name": "Discord chat bridge",
     "author": "Emonas / Apeiron",
