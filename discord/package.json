@@ -10,8 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.4.2",
-    "he": "^1.2.0",
-    "tserv-modsupport": "1.0.0",
-    "tserv-service": "1.0.0"
+    "he": "^1.2.0"
   }
 }
