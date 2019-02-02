@@ -1,4 +1,4 @@
-const { serviceEmitter } = require('tserv-service'), he = require('he');
+const { serviceEmitter } = require('tserv-service'), he = require('he'), emoji = require('node-emoji');
 
 let trigs = {
   /* HELP
@@ -185,7 +185,8 @@ function handleMsgs(m) {
   if (type === undefined) { return; }
   switch (m.channel.name) { case 'party': case 'raid': if (!this._proxy.avail[m.channel.name]) { m.channel.send(`You are not in a ${m.channel.name}`); return; } }
   if (m.channel.__muted) { m.channel.send('Shh, you\'re still muted'); return; }
-  let msg = m.cleanContent.replace(/\[/g, '{').replace(/\]/g, '}');
+  let msg = emoji.unemojify(m.cleanContent.replace(/\[/g, '{').replace(/\]/g, '}'));
+  if (msg.replace(/\w*/g, '')) { return; }
   if (!sendMsg(this._proxy.client, type, m.channel.name, m.cleanContent)) {
     msg = msg.substr(0,300);
     m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
