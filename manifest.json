@@ -26,7 +26,8 @@
     "extra/S_FRIEND_BUSY.1.def": "077da23bf3c4cc5fe50b43c0b4515ecfd91bc9445c969a3c2d6678a6d7a87fe2",
     "index.js": "7a9640551206f7d816e077412229ac9d9b0aa33bffc83ec23e2fc0fad6cc4737",
     "module.json": "c1d51a9eb1f4a569ab5b7fec03632fecccee3c34d365a651671c0f04136e8ea7",
-    "README": "5a2aea2523a5807a4ed32cd44490aee9f3c32cfcf0a97ad790fbe1b67ae438f5",
+    "package.json": "94ea233f2c6637cc8c6f3c4d1c6b75938d9f514f2cfd44c9bfdf6ab684a0d5e6",
+    "README": "1ce2db90a279967120b58d9d4cb7071279e8d05e6e630a9d4645c42ddc32506a",
     "TODO": "17d5640cda2f1cf62523c27c838babf76789f1c6642bc78079369fe30b3276c1"
   },
   "defs": {
