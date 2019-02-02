@@ -30,6 +30,8 @@ Proxy side:
     cd [proxy]\mods\discordbridge\discord
     npm --global install windows-build-tools
     npm install
+    cd ..
+    npm install
   Assuming the above went okay, close Command Prompt
   Open [proxy]\mods\discordbridge\discord\auth
   Paste the token and your client ID from Notepad into the "" for sekrit and owner
