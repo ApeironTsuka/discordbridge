@@ -110,6 +110,12 @@ class FLManager {
     if (ev.length) { cb(ev); }
   }
   clear() { this.list.length = 0; }
+  busy(id, state) {
+    let u = this.list.get(id);
+    if (u === undefined) { return; }
+    u.status = (state?1:0);
+    this.cb({ id, name: u.name, status: u.status });
+  }
 }
 class PartyList {
   constructor(list) { this.list = list||[]; }
@@ -325,6 +331,11 @@ module.exports = function DiscordBridge(dispatch) {
     let { client } = bridgeServer;
     if (!client) { return; }
     flManager.update(event);
+  });
+  dispatch.hook('S_FRIEND_BUSY', 1, (event) => {
+    let { client } = bridgeServer;
+    if (!client) { return; }
+    flManager.busy(event.playerId, !!event.state);
   });
   dispatch.hook('S_MUTE', 2, (event) => {
     let { client } = bridgeServer;

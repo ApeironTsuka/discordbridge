@@ -1,0 +1,2 @@
+uint32 playerId
+int32 state # 1 for busy, 0 for not

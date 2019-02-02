@@ -23,9 +23,10 @@
     "node_modules/tserv-service/package.json": "a78ea2d58801c38d4a28b8cde313f7be4caeaad3c4986cb6a19239bf33959fe5",
     "services/api/bridge.js": "459c6f06f840207d2170097eaf7d9bb19ceba51cc8551d513757a51d1f2987f2",
     "extra/S_MUTE.2.def": "c35673c0ddc2e55c9a88addc14c9923d8ac42d5c0ec1d0f970cba749e785a080",
-    "index.js": "f8228cf82a0fbeaa8a75230ca6e20eae40bed01f66ba18326daf9f94cfb8e672",
+    "extra/S_FRIEND_BUSY.1.def": "077da23bf3c4cc5fe50b43c0b4515ecfd91bc9445c969a3c2d6678a6d7a87fe2",
+    "index.js": "7a9640551206f7d816e077412229ac9d9b0aa33bffc83ec23e2fc0fad6cc4737",
     "module.json": "c1d51a9eb1f4a569ab5b7fec03632fecccee3c34d365a651671c0f04136e8ea7",
-    "README": "c15fb487469f76274fa48f4539d8227098f0c72fc99d73a9153f64d9759d6698",
+    "README": "5a2aea2523a5807a4ed32cd44490aee9f3c32cfcf0a97ad790fbe1b67ae438f5",
     "TODO": "17d5640cda2f1cf62523c27c838babf76789f1c6642bc78079369fe30b3276c1"
   },
   "defs": {
@@ -42,6 +43,7 @@
     "S_LOGOUT_PARTY_MEMBER": 1,
     "S_LEAVE_PARTY_MEMBER": 2,
     "S_UPDATE_FRIEND_INFO": 1,
+    "S_FRIEND_BUSY": 1,
     "S_MUTE": 2,
     "S_SYSTEM_MESSAGE": 1
   }

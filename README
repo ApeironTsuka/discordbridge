@@ -39,6 +39,7 @@ Proxy side:
   If it complains about the following...
      ... S_PRIVATE_CHANNEL_NOTICE missing, add the line "S_PRIVATE_CHANNEL_NOTICE = 55697" to [proxy]\node_modules\tera-data\map\protocol.343312.map
      ... S_MUTE missing, add the line "S_MUTE = 42392" to [proxy]\node_modules\tera-data\map\protocol.343312.map and copy extra\S_MUTE.2.def to [proxy]\node_modules\tera-data\protocol
+     ... S_FRIEND_BUSY missing, add the line "S_FRIEND_BUSY = 28313" to [proxy]\node_modules\tera-data\map\protocol.343312.map and copy extra/S_FRIEND_BUSY.1.def to [proxy]\node_modules\tera-data\protocol
      ... Discord.js not found, make sure the Command Prompt steps above were done correctly
      ... missing owner or token in discord/auth, make sure you editted that file as stated above
      ... anything else, report it to me or the github 
