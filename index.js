@@ -220,7 +220,6 @@ module.exports = function DiscordBridge(dispatch) {
     let { client } = bridgeServer;
     if (!client) { return; }
     bridgeServer.lastSent = false;
-    client.api.msg(client.api.types.WHISP, dispatch.game.me.name, event.target, event.message);
   });
   dispatch.hook('S_CHAT', 2, (event) => {
     let { client } = bridgeServer, target;
@@ -232,7 +231,8 @@ module.exports = function DiscordBridge(dispatch) {
   dispatch.hook('S_WHISPER', 2, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
-    client.api.msg(client.api.types.WHISP, undefined, event.authorName, event.message);
+    if (event.authorName == discord.game.me.name) { client.api.msg(client.api.types.WHISP, event.authorName, event.recipient, event.message); }
+    else { client.api.msg(client.api.types.WHISP, undefined, event.authorName, event.message); }
   });
   dispatch.hook('S_JOIN_PRIVATE_CHANNEL', 2, (event) => {
     let { client } = bridgeServer;

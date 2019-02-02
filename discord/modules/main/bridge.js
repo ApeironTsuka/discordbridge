@@ -222,25 +222,25 @@ function setupProxy(bot) {
   client.on('ready', function () {
     this.loadApi();
     this.api.on('msg', function (type, target, from, msg) {
-      let { types } = this, { chanmap, settings } = bot._proxy, m = he.decode(msg.replace(/<.*?>/g, ''));
+      let { types } = this, { chanmap, settings } = bot._proxy, m = he.decode(msg.replace(/<.*?>/g, '')), z = '`';
       switch (type) {
         case types.WHISP:
           if (!settings.enabled.whispers) { break; }
           findWhisp(bot, from)
-          .then((c) => c.send(`[${target||from}]: ${m}`));
+          .then((c) => c.send(`${z}[${target||from}]: ${m}${z}`));
           break;
         case types.PRIV:
           if (!settings.enabled.privates) { break; }
           findPriv(bot, target)
-          .then((c) => c.send(`[${from}]: ${m}`));
+          .then((c) => c.send(`${z}[${from}]: ${m}${z}`));
           break;
         case types.CHAN:
           switch (target) {
             case 'say': case 'area': case 'party': case 'raid': case 'guild': case 'trade': case 'global':
-              if (chanmap[target]) { chanmap[target].send(`[${from}]: ${m}`); }
+              if (chanmap[target]) { chanmap[target].send(`${z}[${from}]: ${m}${z}`); }
               break;
-            case 'partyn': if (chanmap.party) { chanmap.party.send(`[NOTICE][${from}]: ${m}`); } break;
-            case 'raidn': if (chanmap.raid) { chanmap.raid.send(`[NOTICE][${from}]: ${m}`); } break;
+            case 'partyn': if (chanmap.party) { chanmap.party.send(`${z}[NOTICE][${from}]: ${m}${z}`); } break;
+            case 'raidn': if (chanmap.raid) { chanmap.raid.send(`${z}[NOTICE][${from}]: ${m}${z}`); } break;
             default: return;
           }
           break;
@@ -265,8 +265,9 @@ function setupProxy(bot) {
     });
     this.api.on('priv notice', function (chan, event, name) {
       if (!bot._proxy.settings.enabled.privates) { return; }
+      let z = '`';
       findPriv(bot, chan)
-      .then((c) => c.send(`[${name}] has ${event+'ed'}`));
+      .then((c) => c.send(`${z}[${name}] has ${event+'ed'}${z}`));
     });
     this.api.on('priv list', function (list) {
       if (!bot._proxy.settings.enabled.privates) { return; }
