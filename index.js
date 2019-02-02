@@ -206,14 +206,15 @@ module.exports = function DiscordBridge(dispatch) {
   bridgeServer.discord = require('child_process').fork(`${discordPath}/main.js`, [ bridgeServer.inst.emitter.port ], { cwd: discordPath });
   this.destructor = function () { bridgeServer.destroy(); };
   dispatch.hook('C_CHAT', 1, (event) => {
-    let { client } = bridgeServer, target;
+    let { client } = bridgeServer;
     if (!client) { return; }
     bridgeServer.lastSent = false;
   });
   dispatch.hook('C_WHISPER', 1, (event) => {
-    let { client } = bridgeServer, target;
+    let { client } = bridgeServer;
     if (!client) { return; }
     bridgeServer.lastSent = false;
+    client.api.msg(client.api.types.WHISP, dispatch.game.me.name, event.target, event.message);
   });
   dispatch.hook('S_CHAT', 2, (event) => {
     let { client } = bridgeServer, target;
@@ -311,9 +312,9 @@ module.exports = function DiscordBridge(dispatch) {
     for (let i = 0, l = evs.length; i < l; i++) {
       out += `${evs[i].name} has changed status to: `;
       switch (evs[i].status) {
-        case 0: out += 'offline'; break;
+        case 2: out += 'offline'; break;
         case 1: out += 'busy'; break;
-        case 2: out += 'online'; break;
+        case 0: out += 'online'; break;
         default: out += `unknown (${evs[i].status})`; break;
       }
       out += '\n';

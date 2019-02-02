@@ -226,7 +226,7 @@ function setupProxy(bot) {
         case types.WHISP:
           if (!settings.enabled.whispers) { break; }
           findWhisp(bot, from)
-          .then((c) => c.send(`[${from}]: ${m}`));
+          .then((c) => c.send(`[${target||from}]: ${m}`));
           break;
         case types.PRIV:
           if (!settings.enabled.privates) { break; }
