@@ -190,6 +190,7 @@ function handleMsgs(m) {
     m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
   }
   this._proxy.lastSource = m.channel;
+  m.delete();
 }
 function setupServer(bot) {
   let chanmap = { whispers: [], privates: [] };

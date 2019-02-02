@@ -209,25 +209,11 @@ module.exports = function DiscordBridge(dispatch) {
     let { client } = bridgeServer, target;
     if (!client) { return; }
     bridgeServer.lastSent = false;
-    if ((event.channel >= 11) && (event.channel <= 18)) {
-      let ind = event.channel-11;
-      for (let i = 0, ids = privs.ids, keys = Object.keys(ids), l = keys.length; i < l; i++) {
-        if (ids[keys[i]].ind == ind) {
-          client.api.msg(client.api.types.PRIV, ids[keys[i]].name, dispatch.game.me.name, event.message);
-          break;
-        }
-      }
-    } else {
-      let target = idToChan(event.channel);
-      if (!target) { return; }
-      client.api.msg(client.api.types.CHAN, target, dispatch.game.me.name, event.message);
-    }
   });
   dispatch.hook('C_WHISPER', 1, (event) => {
     let { client } = bridgeServer, target;
     if (!client) { return; }
     bridgeServer.lastSent = false;
-    client.api.msg(client.api.types.WHISP, dispatch.game.me.name, undefined, event.message);
   });
   dispatch.hook('S_CHAT', 2, (event) => {
     let { client } = bridgeServer, target;
