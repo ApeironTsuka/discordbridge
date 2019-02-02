@@ -5,7 +5,7 @@
     "discord/modules/main/core/services.js": "874574199051e2d9797fb6048b809976335665296851f19cd9d2dda86e7fd7aa",
     "discord/modules/main/core/triggers.js": "a84f7e6faab7253d2999981624ab19aa546407edd40e65ddcea9d09c21926938",
     "discord/modules/main/help.js": "3126755b155c17a3a96bb6f627adcb6983a55caefc89fd54bbfd9d77b270ccbc",
-    "discord/modules/main/bridge.js": "b869bad00898eb284f748680342d69d0d710bedbe89712779aeea1e00ffdb9c6",
+    "discord/modules/main/bridge.js": "b4b3eb08d4d8e89b788b2a9ca8c784a57252d58c01e39922a5cac74ec9e80279",
     "discord/modules/main/system.js": "f9bb091960f5778123c3b4dbd5dc2aecaa1ee3dd50137bb8801fd0235c0a89a9",
     "discord/node_modules/tserv-modsupport/main.js": "35ff73d8abd604a1bf4042a74dc435c8dc4c6023e546a1016eaf95db686c05c5",
     "discord/node_modules/tserv-modsupport/package.json": "0404205a09cbbae5499749684de2d0bda4497f75c80246d999f0231ad6401658",
@@ -28,7 +28,7 @@
     "module.json": "c1d51a9eb1f4a569ab5b7fec03632fecccee3c34d365a651671c0f04136e8ea7",
     "package.json": "94ea233f2c6637cc8c6f3c4d1c6b75938d9f514f2cfd44c9bfdf6ab684a0d5e6",
     "README": "1ce2db90a279967120b58d9d4cb7071279e8d05e6e630a9d4645c42ddc32506a",
-    "TODO": "17d5640cda2f1cf62523c27c838babf76789f1c6642bc78079369fe30b3276c1"
+    "TODO": "397e313e3a7653d94579c9c40e08f81b031a69bf47da346dd09fdef6d4783c70"
   },
   "defs": {
     "C_CHAT": 1,
