@@ -22,12 +22,10 @@
     "node_modules/tserv-service/main.js": "51149a7b3b568870c4bb6f0c474909440f0a4f5c02f18c70c9ed66df6dd970f9",
     "node_modules/tserv-service/package.json": "a78ea2d58801c38d4a28b8cde313f7be4caeaad3c4986cb6a19239bf33959fe5",
     "services/api/bridge.js": "459c6f06f840207d2170097eaf7d9bb19ceba51cc8551d513757a51d1f2987f2",
-    "extra/S_MUTE.2.def": "c35673c0ddc2e55c9a88addc14c9923d8ac42d5c0ec1d0f970cba749e785a080",
-    "extra/S_CHANGE_FRIEND_STATE.1.def": "077da23bf3c4cc5fe50b43c0b4515ecfd91bc9445c969a3c2d6678a6d7a87fe2",
-    "index.js": "49d65771bde16b8135eca819a4d4afbd441e9ac3221fea9bebfb14cda7b16503",
+    "index.js": "6c34aa78db88f7074302c3d02fd3f20b6728f4c80d142d8904a95c77ad603296",
     "module.json": "c1d51a9eb1f4a569ab5b7fec03632fecccee3c34d365a651671c0f04136e8ea7",
     "package.json": "94ea233f2c6637cc8c6f3c4d1c6b75938d9f514f2cfd44c9bfdf6ab684a0d5e6",
-    "README": "110db2d7bb215183eb051ffd866d2778ec788382aa6d917a5ee5d0879d6b7e8a",
+    "README": "1514c634c36ffffb4c560480f9d6c4750e232595b4deb2354953c8af3da415f3",
     "TODO": "2ef25a0e31374c7fd8b7cc2937d54647f8e6a7bbf7dfbc77fad98c8cf7b52833"
   },
   "defs": {

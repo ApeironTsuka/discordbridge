@@ -307,12 +307,12 @@ module.exports = function DiscordBridge(dispatch) {
   dispatch.hook('S_CHANGE_FRIEND_STATE', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
-    flManager.busy(event.playerId, !!event.state);
+    flManager.busy(event.playerId, event.state==1);
   });
   dispatch.hook('S_MUTE', 2, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
-    client.api.muted(idToChan(event.channel), event.status);
+    client.api.muted(idToChan(event.channel), event.muted);
   });
   dispatch.hook('S_SYSTEM_MESSAGE', 1, (event) => {
     let { client } = bridgeServer;
