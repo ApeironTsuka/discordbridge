@@ -304,7 +304,7 @@ module.exports = function DiscordBridge(dispatch) {
     if (!client) { return; }
     flManager.update(event);
   });
-  dispatch.hook('S_FRIEND_BUSY', 1, (event) => {
+  dispatch.hook('S_CHANGE_FRIEND_STATE', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     flManager.busy(event.playerId, !!event.state);
