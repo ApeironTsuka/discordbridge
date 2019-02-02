@@ -185,11 +185,16 @@ function handleMsgs(m) {
   if (type === undefined) { return; }
   switch (m.channel.name) { case 'party': case 'raid': if (!this._proxy.avail[m.channel.name]) { m.channel.send(`You are not in a ${m.channel.name}`); return; } }
   if (m.channel.__muted) { m.channel.send('Shh, you\'re still muted'); return; }
-  let msg = emoji.unemojify(m.cleanContent.replace(/\[/g, '{').replace(/\]/g, '}'));
-  if (msg.replace(/\w*/g, '') === '') { return; }
-  if (!sendMsg(this._proxy.client, type, m.channel.name, msg)) {
-    msg = msg.substr(0,300);
-    m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
+  let msgs = m.cleanContent.split('\n');
+  for (let i = 0, l = msgs.length; i < l; i++) {
+    let msg = emoji.unemojify(msgs[i].replace(/\[/g, '{').replace(/\]/g, '}'));
+    if (msg.replace(/\s*/g, '') === '') { continue; }
+    setTimeout(() => {
+      if (!sendMsg(this._proxy.client, type, m.channel.name, msg)) {
+        msg = msg.substr(0,300);
+        m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
+      }
+    }, i*400);
   }
   this._proxy.lastSource = m.channel;
   m.delete();
@@ -353,7 +358,7 @@ function load(bot) {
     for (let i = 0, list = bot._proxy.settings.enabled, keys = Object.keys(list), l = keys.length; i < l; i++) {
       switch (keys[i]) { case 'whispers': case 'privates': case 'friends': continue; }
       if (!list[keys[i]]) { continue; }
-      if (!chanmap[keys[i]]) { out += keys[i]; }
+      if (!chanmap[keys[i]]) { out += `${keys[i]}\n`; }
     }
     if (out != '') {
       out = `Missing the following enabled channels:\n${out}\nTo correct this:\n  Delete the channel(s) (if exists)\n  ${bot.triggerPrefix}disable <name>\n  ${bot.triggerPrefix}enable <name>`;

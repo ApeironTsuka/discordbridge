@@ -74,37 +74,23 @@ class bridgeServer {
     bridgeServer.flManager.clear();
   }
 }
-class FLList {
-  constructor(list) { this.list = list||[]; }
-  has(id) {
-    for (let i = 0, list = this.list, l = list.length; i < l; i++) { if (list[i].id == id) { return list[i]; } }
-    return false;
-  }
-  get(id) { return this.has(id)||undefined; }
-  add(id, name, status) {
-    if (this.has(id)) { return; }
-    this.list.push({ id, name, status });
-  }
-  rem(id) { for (let i = 0, list = this.list, l = list.length; i < l; i++) { if (list[i].id == id) { list.splice(i, 1); return true; } } return false; }
-  get length() { return this.list.length; }
-  set length(n) { this.list.length = n; }
-}
 class FLManager {
-  constructor(cb) { this.cb = cb; this.list = new FLList(); }
+  constructor(cb) { this.cb = cb; this.list = new Map(); }
   update(newlist) {
     let { list: olist, cb } = this, t, ev = [],
-        nlist = new FLList(newlist.friends), priming = olist.length == 0;
-    for (let i = 0, { list } = nlist, l = list.length; i < l; i++) {
-      let p = list[i];
+        list = newlist.friends, priming = olist.size == 0;
+    function obj(p) { return { id: p.id, name: p.name, status: p.status }; }
+    for (let i = 0, l = list.length; i < l; i++) {
+      let p = list[i], k = obj(p);
       if (!olist.has(p.id)) {
-        olist.add(p.id, p.name, p.status);
-        if (!priming) { ev.push({ id: p.id, name: p.name, status: p.status }); }
+        olist.set(p.id, k);
+        if (!priming) { ev.push(k); }
         continue;
       }
       t = olist.get(p.id);
       if (t.status != p.status) {
-        ev.push({ id: t.id, name: t.name, status: p.status });
         t.status = p.status;
+        ev.push(obj(t));
       }
     }
     if (ev.length) { cb(ev); }
@@ -117,73 +103,59 @@ class FLManager {
     this.cb({ id, name: u.name, status: u.status });
   }
 }
-class PartyList {
-  constructor(list) { this.list = list||[]; }
-  has(id) {
-    for (let i = 0, list = this.list, l = list.length; i < l; i++) { if (list[i].playerId == id) { return list[i]; } }
-    return false;
-  }
-  get(id) { return this.has(id)||undefined; }
-  add(id, name, online) {
-    if (this.has(id)) { return; }
-    this.list.push({ playerId: id, name, online });
-  }
-  rem(id) { for (let i = 0, list = this.list, l = list.length; i < l; i++) { if (list[i].playerId == id) { list.splice(i, 1); return true; } } return false; }
-  get length() { return this.list.length; }
-  set length(n) { this.list.length = n; }
-}
 class PartyManager {
-  constructor(cb) { this.cb = cb; this.list = new PartyList(); }
+  constructor(cb) { this.cb = cb; this.list = new Map(); }
   update(newlist) {
     let { list: olist, cb } = this, t, ev = [],
-        nlist = new PartyList(newlist.members);
+        list = newlist.members, nmap = new Map();
+    function obj(p) { return { id: p.playerId, name: p.name, online: p.online }; }
     this.type = newlist.raid?'raid':'party';
-    for (let i = 0, { list } = nlist, l = list.length; i < l; i++) {
-      let p = list[i];
+    for (let i = 0, l = list.length; i < l; i++) {
+      let p = list[i], k = obj(p);
+      nmap.set(p.id, k);
       if (!olist.has(p.playerId)) {
-        olist.add(p.playerId, p.name, p.online);
-        ev.push({ ev: 'join', id: p.playerId, name: p.name, online: p.online });
+        olist.set(p.playerId, k);
+        ev.push({ ev: 'join', p: k });
         continue;
       }
       t = olist.get(p.playerId);
       if (t.online != p.online) {
         if (p.online) {
           t.online = true;
-          ev.push({ ev: 'online', id: t.playerId, name: t.name });
+          ev.push({ ev: 'online', p: obj(t) });
         } else {
           t.online = false;
-          ev.push({ ev: 'offline', id: t.playerId, name: t.name });
+          ev.push({ ev: 'offline', p: obj(t) });
         }
       }
     }
-    for (let i = 0, { list } = olist, l = list.length; i < l; i++) {
-      let p = list[i];
-      if (!nlist.has(p.playerId)) {
-        ev.push({ ev: 'left', id: p.playerId, name: p.name });
-        olist.rem(p.playerId);
+    for (const p of olist) {
+      if (!nmap.has(p.playerId)) {
+        ev.push({ ev: 'left', p });
+        olist.delete(p.playerId);
       }
     }
     if (ev.length) { cb(ev); }
   }
   offline(pid) {
-    let t = this.list.get(pid);
-    if (!t) { return; }
-    t.online = false;
-    this.cb([ { ev: 'offline', id: t.playerId, name: t.name } ]);
+    let p = this.list.get(pid);
+    if (!p) { return; }
+    p.online = false;
+    this.cb([ { ev: 'offline', p } ]);
   }
   online(pid) {
-    let t = this.list.get(pid);
-    if (!t) { return; }
-    t.online = true;
-    this.cb([ { ev: 'online', id: t.playerId, name: t.name } ]);
+    let p = this.list.get(pid);
+    if (!p) { return; }
+    p.online = true;
+    this.cb([ { ev: 'online', p } ]);
   }
   left(pid) {
-    let t = this.list.get(pid);
-    if (!t) { return; }
-    this.list.rem(pid);
-    this.cb([ { ev: 'left', id: t.playerId, name: t.name } ]);
+    let p = this.list.get(pid);
+    if (!p) { return; }
+    this.list.delete(pid);
+    this.cb([ { ev: 'left', p } ]);
   }
-  clear() { this.list.length = 0; this.type = 'none'; }
+  clear() { this.list.clear(); this.type = 'none'; }
 }
 module.exports = function DiscordBridge(dispatch) {
   if (bridgeServer.running) { console.log('Only the first loaded TERA instance can use Discord'); return; }
@@ -272,10 +244,10 @@ module.exports = function DiscordBridge(dispatch) {
     if (!client) { return; }
     for (let i = 0, l = evs.length; i < l; i++) {
       switch (evs[i].ev) {
-        case 'online': out += `${evs[i].name} has come online\n`; break;
-        case 'offline': out += `${evs[i].name} has gone offline\n`; break;
-        case 'join': out += `${evs[i].name} has joined the ${partyManager.type}\n`; break;
-        case 'left': out += `${evs[i].name} has left the ${partyManager.type}\n`; break;
+        case 'online': out += `${evs[i].p.name} has come online\n`; break;
+        case 'offline': out += `${evs[i].p.name} has gone offline\n`; break;
+        case 'join': out += `${evs[i].p.name} has joined the ${partyManager.type}\n`; break;
+        case 'left': out += `${evs[i].p.name} has left the ${partyManager.type}\n`; break;
         default: continue;
       }
     }
