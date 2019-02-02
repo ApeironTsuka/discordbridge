@@ -187,7 +187,7 @@ function handleMsgs(m) {
   if (m.channel.__muted) { m.channel.send('Shh, you\'re still muted'); return; }
   let msg = emoji.unemojify(m.cleanContent.replace(/\[/g, '{').replace(/\]/g, '}'));
   if (msg.replace(/\w*/g, '') === '') { return; }
-  if (!sendMsg(this._proxy.client, type, m.channel.name, m.cleanContent)) {
+  if (!sendMsg(this._proxy.client, type, m.channel.name, msg)) {
     msg = msg.substr(0,300);
     m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
   }
