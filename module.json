@@ -7,9 +7,7 @@
     "description": "Bridges Tera's chats to a Discord server.",
     "options": {
         "niceName": "DiscordBridge",
-        "guiName": "Discord chat bridge",
-        "settingsVersion": 1,
-        "settingsFile": "settings.json"
+        "guiName": "Discord chat bridge"
     },
     "servers": ["https://raw.githubusercontent.com/ApeironTsuka/discordbridge/master/"],
     "donationUrl": ""
