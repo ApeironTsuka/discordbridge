@@ -151,6 +151,8 @@ function init() {
   console.log(`connected ${dcCount}`);
   if (bots.length > 0) { return; } // prevent doubled init
   if (!botData.servers) { botData.servers = []; }
+  if (!fs.existsSync('./data')) { fs.mkdirSync('./data'); }
+  if (!fs.existsSync('./extensions')) { fs.mkdirSync('./extensions'); }
   pBot = new discordBot(client, 0, true);
   for (let i = 0, serverList = botData.servers, l = serverList.length; i < l; i++) { bots.push(botsHash[serverList[i]] = new discordBot(client, serverList[i])); }
   client.__bots = bots;

@@ -53,6 +53,7 @@ Proxy side:
     [discord] loaded help
     [discord] loaded bridge
     [discord] Successfully logged in
+  If you don't see the "Loading bot id <your new server's ID>", say something in one of the channels
   Log into a character
   You should start seeing things showing up on Discord
   Use !help on Discord to get a list of available commands

@@ -99,7 +99,7 @@ function unload(bot) {
       client.connected = 0;
       client.ready = false;
       client.disconnect();
-      delete client;
+      delete services[keys[i]];
     }
   }
 }

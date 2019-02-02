@@ -180,6 +180,7 @@ function handleMsgs(m) {
     trigger = trigger.substr(k.length).toLowerCase();
     if (this.hasTrigger(trigger)) { return; }
   }
+  if ((!this._proxy.client) || (!this._proxy.client.api)) { return; }
   let type = findChanType(this, m.channel.id);
   if (type === undefined) { return; }
   switch (m.channel.name) { case 'party': case 'raid': if (!this._proxy.avail[m.channel.name]) { m.channel.send(`You are not in a ${m.channel.name}`); return; } }

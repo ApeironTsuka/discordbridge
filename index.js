@@ -35,7 +35,7 @@ function attachEvents(c) {
       default: return;
     }
   });
-  let settings = prox.settings;
+  let settings = bridgeServer.settings;
   c.api.partyStatus(settings.party, settings.raid);
   c.api.privList(bridgeServer.privs.names);
 }
@@ -181,7 +181,7 @@ class PartyManager {
 }
 module.exports = function DiscordBridge(dispatch) {
   if (bridgeServer.running) { console.log('Only the first loaded TERA instance can use Discord'); return; }
-  let emitter, types, settings = this.settings = {}, privs = bridgeServer.privs = { names: {}, ids: {} };
+  let emitter, types, settings = bridgeServer.settings = {}, privs = bridgeServer.privs = { names: {}, ids: {} };
   let discordPath = `${__dirname}/discord`, fs = require('fs');
   try { fs.statSync(`${discordPath}/node_modules/discord.js`); }
   catch (e) {
