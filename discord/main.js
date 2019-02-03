@@ -2,7 +2,7 @@
 const fs = require('fs');
 console._log = console.log;
 console.log = function (...args) { console._log('[discord]', ...args); fs.appendFileSync('log', ...args); };
-fs.truncateSync('log');
+fs.writeFileSync('log', '');
 console.log('Loading..');
 const Discord = require('discord.js'), util = require('util'),
       EventEmitter = require('events').EventEmitter, http = require('http'), https = require('https'),
