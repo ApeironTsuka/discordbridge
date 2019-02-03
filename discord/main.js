@@ -1,8 +1,10 @@
 'use strict';
+const fs = require('fs');
 console._log = console.log;
-console.log = function (...args) { console._log('[discord]', ...args); };
+console.log = function (...args) { console._log('[discord]', ...args); fs.appendFileSync('log', ...args); };
+fs.truncateSync('log');
 console.log('Loading..');
-const fs = require('fs'), Discord = require('discord.js'), util = require('util'),
+const Discord = require('discord.js'), util = require('util'),
       EventEmitter = require('events').EventEmitter, http = require('http'), https = require('https'),
       urlp = require('url'), modsupport = require('tserv-modsupport');
 let botData, bots = [], botsHash = {}, pBot, client = new Discord.Client(), wget;
