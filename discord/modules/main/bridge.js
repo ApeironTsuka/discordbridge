@@ -341,10 +341,11 @@ function setupProxy(bot) {
       bot.saveData('settings', bot._proxy.settings);
     });
     this.api.on('block list', function (list) {
-      let { blocked } = bot._proxy.settings;
+      let { blocked } = bot._proxy.settings, skip;
       for (let i = 0, l = list.length; i < l; i++) {
-        for (let x = 0, xl = blocked.length; x < xl; x++) { if (blocked[x].id == list[i].id) { xl = -1; break; } }
-        if (xl == -1) { continue; }
+        skip = false;
+        for (let x = 0, xl = blocked.length; x < xl; x++) { if (blocked[x].id == list[i].id) { skip = true; break; } }
+        if (skip) { continue; }
         blocked.push({ id: list[i].id, name: list[i].name });
       }
       bot.saveData('settings', bot._proxy.settings);
