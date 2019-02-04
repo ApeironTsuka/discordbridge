@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('fs');
 console._log = console.log;
-console.log = function (...args) { console._log('[discord]', ...args); fs.appendFileSync('log', `${...args}\n`); };
+console.log = function (...args) { console._log('[discord]', ...args); fs.appendFileSync('log', `${args.join(' ')}\n`); };
 fs.writeFileSync('log', '');
 console.log('Loading..');
 const Discord = require('discord.js'), util = require('util'),
