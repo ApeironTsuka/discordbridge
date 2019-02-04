@@ -233,7 +233,8 @@ function setupProxy(bot) {
   client.on('ready', function () {
     this.loadApi();
     this.api.on('msg', function (type, target, from, msg) {
-      let { types } = this, { chanmap, settings } = bot._proxy, m = patchMessage(msg);
+      let { types } = this, { chanmap, settings } = bot._proxy, { blocked } = settings, m = patchMessage(msg);
+      for (let i = 0, l = blocked.length, lcfrom = from.toLowerCase(); i < l; i++) { if (blocked[i].name.toLowerCase() == from) { return; } }
       switch (type) {
         case types.WHISP:
           if (!settings.enabled.whispers) { break; }
@@ -328,6 +329,17 @@ function setupProxy(bot) {
       if (status) { chanmap[channel].send('You\'ve been muted from this chat. For shame.'); }
       else { chanmap[channel].send('Your mute has been lifted!'); }
     });
+    this.api.on('block', function (id, name) {
+      let { blocked } = bot._proxy.settings;
+      for (let i = 0, l = blocked.length; i < l; i++) { if (blocked[i].id == id) { return; } }
+      blocked.push({ id, name });
+      bot.saveData('settings', bot._proxy.settings);
+    });
+    this.api.on('unblock', function (id) {
+      let { blocked } = bot._proxy.settings;
+      for (let i = 0, l = blocked.length; i < l; i++) { if (blocked[i].id == id) { blocked.splice(i, 1); return; } }
+      bot.saveData('settings', bot._proxy.settings);
+    });
   });
   bot._proxy.client = client;
   return Promise.resolve();
@@ -338,6 +350,7 @@ function load(bot) {
   bot._proxy = { privs: {}, avail: { party: false, raid: false } };
   try { bot._proxy.settings = bot.loadData('settings'); }
   catch (e) { bot._proxy.settings = { keepparty: true, enabled: { say: true, area: true, party: true, raid: true, guild: true, trade: true, global: true, privates: true, whispers: true, friends: true } }; bot.saveData('settings', bot._proxy.settings); }
+  if (!bot._proxy.settings.blocked) { bot._proxy.settings.blocked = []; } // TODO remove soon
   setupServer(bot)
   .then((chanmap) => {
     let saveMap = false;

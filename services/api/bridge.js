@@ -22,6 +22,8 @@ class proxyClientApi extends EventEmitter {
     emitter.on('bad send', function () { api.emit('bad send'); });
     emitter.on('no exist', function () { api.emit('no exist'); });
     emitter.on('muted', function (d) { api.emit('muted', d.status, d.msg); });
+    emitter.on('block', function (d) { api.emit('block', d.id, d.name); });
+    emitter.on('unblock', function (d) { api.emit('unblock', d.id); });
     this.types = types;
   }
   sendMessage(type, target, msg) { this.emitter.send({ event: 'msg', data: { type, target, msg }, replyExpected: false }); }
@@ -46,6 +48,8 @@ class proxyServerApi extends EventEmitter {
   badSend() { this.emitter.send({ event: 'bad send', data: {}, replyExpected: false }); }
   noExist() { this.emitter.send({ event: 'no exist', data: {}, replyExpected: false }); }
   muted(status, msg) { this.emitter.send({ event: 'muted', data: { status, msg }, replyExpected: false }); }
+  block(id, name) { this.emitter.send({ event: 'block', data: { id, name }, replyExpected: false }); }
+  unblock(id) { this.emitter.send({ event: 'unblock', data: { id }, replyExpected: false }); }
   silence() {
     this.emitter._send = this.emitter.send;
     this.emitter.send = function (...args) { if (this.silenced) { return; } this._send(...args); };

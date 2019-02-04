@@ -314,6 +314,16 @@ module.exports = function DiscordBridge(dispatch) {
     if (!client) { return; }
     client.api.muted(idToChan(event.channel), event.muted);
   });
+  dispatch.hook('S_ADD_BLOCKED_USER', 2, (event) => {
+    let { client } = bridgeServer;
+    if (!client) { return; }
+    client.api.block(event.id, event.name);
+  });
+  dispatch.hook('S_REMOVE_BLOCKED_USER', 1, (event) => {
+    let { client } = bridgeServer;
+    if (!client) { return; }
+    client.api.unblock(event.id);
+  });
   dispatch.hook('S_SYSTEM_MESSAGE', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
