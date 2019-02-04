@@ -174,7 +174,7 @@ function sendMsg(client, type, target, msg) {
   return ret;
 }
 function handleMsgs(m) {
-  let words = m.cleanContent.replace(/  */g, ' ').replace(/^ /, '').replace(/ $/, '').split(/ /), trigger = words[0], k = this.triggerPrefix, { types } = bot._proxy.client.api;
+  let words = m.cleanContent.replace(/  */g, ' ').replace(/^ /, '').replace(/ $/, '').split(/ /), trigger = words[0], k = this.triggerPrefix, { types } = this._proxy.client.api;
   if (this.auth.owner != m.author.id) { return; }
   if ((new RegExp('^'+k.replace(/([\\\[\]\(\)\^\$\.\|\?\*\+\{\}])/g, '\\$1'))).test(trigger)) {
     trigger = trigger.substr(k.length).toLowerCase();
