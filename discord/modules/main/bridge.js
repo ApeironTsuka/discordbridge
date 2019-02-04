@@ -234,7 +234,7 @@ function setupProxy(bot) {
     this.loadApi();
     this.api.on('msg', function (type, target, from, msg) {
       let { types } = this, { chanmap, settings } = bot._proxy, { blocked } = settings, m = patchMessage(msg);
-      for (let i = 0, l = blocked.length, lcfrom = from.toLowerCase(); i < l; i++) { if (blocked[i].name.toLowerCase() == from) { return; } }
+      for (let i = 0, l = blocked.length, lcfrom = from.toLowerCase(); i < l; i++) { if (blocked[i].name.toLowerCase() == lcfrom) { return; } }
       switch (type) {
         case types.WHISP:
           if (!settings.enabled.whispers) { break; }
