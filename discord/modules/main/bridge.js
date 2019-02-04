@@ -146,7 +146,7 @@ function saveChanmap(bot) {
   bot.saveData('chanmap', out);
 }
 function findWhisp(bot, name) {
-  let whispers = bot._proxy.chanmap.whispers, lcn = name.toLowerCase();
+  let whispers = bot._proxy.chanmap.whispers, lcn = name.toLowerCase().replace(/\./g, '-');
   for (let i = 0, l = whispers.length; i < l; i++) { if (lcn == whispers[i].name) { return Promise.resolve(whispers[i]); } }
   return bot.server.createChannel(lcn, 'text')
   .then((c) => { whispers.push(c); saveChanmap(bot); return c.setParent(bot._proxy.chanmap.whisper); });
@@ -174,7 +174,7 @@ function sendMsg(client, type, target, msg) {
   return ret;
 }
 function handleMsgs(m) {
-  let words = m.cleanContent.replace(/  */g, ' ').replace(/^ /, '').replace(/ $/, '').split(/ /), trigger = words[0], k = this.triggerPrefix;
+  let words = m.cleanContent.replace(/  */g, ' ').replace(/^ /, '').replace(/ $/, '').split(/ /), trigger = words[0], k = this.triggerPrefix, { types } = bot._proxy.client.api;
   if (this.auth.owner != m.author.id) { return; }
   if ((new RegExp('^'+k.replace(/([\\\[\]\(\)\^\$\.\|\?\*\+\{\}])/g, '\\$1'))).test(trigger)) {
     trigger = trigger.substr(k.length).toLowerCase();
@@ -190,7 +190,8 @@ function handleMsgs(m) {
     let msg = emoji.unemojify(msgs[i].replace(/\[/g, '{').replace(/\]/g, '}'));
     if (msg.replace(/\s*/g, '') === '') { continue; }
     setTimeout(() => {
-      if (!sendMsg(this._proxy.client, type, m.channel.name, msg)) {
+      let cname = m.channel.name;
+      if (!sendMsg(this._proxy.client, type, (type==types.WHISP?cname.replace(/-/g, '.'):cname), msg)) {
         msg = msg.substr(0,300);
         m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
       }
