@@ -337,7 +337,7 @@ function setupProxy(bot) {
     });
     this.api.on('unblock', function (id) {
       let { blocked } = bot._proxy.settings;
-      for (let i = 0, l = blocked.length; i < l; i++) { if (blocked[i].id == id) { blocked.splice(i, 1); return; } }
+      for (let i = 0, l = blocked.length; i < l; i++) { if (blocked[i].id == id) { blocked.splice(i, 1); break; } }
       bot.saveData('settings', bot._proxy.settings);
     });
     this.api.on('block list', function (list) {
