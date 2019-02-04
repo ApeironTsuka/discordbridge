@@ -324,6 +324,13 @@ module.exports = function DiscordBridge(dispatch) {
     if (!client) { return; }
     client.api.unblock(event.id);
   });
+  dispatch.hook('S_USER_BLOCK_LIST', 2, (event) => {
+    let { client } = bridgeServer;
+    if (!client) { return; }
+    let out = [];
+    for (let i = 0, list = event.blockList, l = list.length; i < l; i++) { out.push({ id: list[i].id, name: list[i].name }); }
+    client.api.blockList(out);
+  });
   dispatch.hook('S_SYSTEM_MESSAGE', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
