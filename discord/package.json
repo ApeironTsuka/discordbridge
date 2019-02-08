@@ -14,6 +14,8 @@
     "glob": "^7.1.3",
     "he": "^1.2.0",
     "node-emoji": "^1.8.1",
-    "syntax-error": "^1.4.0"
+    "syntax-error": "^1.4.0",
+    "tserv-service": "github:ApeironTsuka/tserv-service",
+    "tserv-modsupport": "github:ApeironTsuka/tserv-modsupport"
   }
 }
