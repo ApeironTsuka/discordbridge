@@ -1,3 +1,7 @@
+watch for channel deletion
+  complain when in-use channels are deleted
+  silently handle whisper deletions as if !close was used
+
 maybe have !close work in private channels to leave them
 
 fork node-emoji and merge a bunch of PRs into it to use instead (since upstream seems abandoned)

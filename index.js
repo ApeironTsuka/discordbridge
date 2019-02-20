@@ -35,6 +35,18 @@ function attachEvents(c) {
       default: return;
     }
   });
+  c.on('block', function (d) {
+    let types = c.api.types;
+    let { name } = d;
+    prox.dispatch.toServer('C_BLOCK_USER', 1, { name });
+    bridgeServer.lastSent = types.BLOCK;
+  });
+  c.on('unblock', function (d) {
+    let types = c.api.types;
+    let { name } = d;
+    prox.dispatch.toServer('C_REMOVE_BLOCKED_USER', 1, { name });
+    bridgeServer.lastSent = types.BLOCK;
+  });
   let settings = bridgeServer.settings;
   c.api.partyStatus(settings.party, settings.raid);
   c.api.privList(bridgeServer.privs.names);
@@ -315,14 +327,16 @@ module.exports = function DiscordBridge(dispatch) {
     client.api.muted(idToChan(event.channel), event.muted);
   });
   dispatch.hook('S_ADD_BLOCKED_USER', 2, (event) => {
-    let { client } = bridgeServer;
+    let { client } = bridgeServer, b = (bridgeServer.lastSent == client.api.types.BLOCK);
     if (!client) { return; }
-    client.api.block(event.id, event.name);
+    client.api.block(event.id, event.name, b);
+    if (b) { bridgeServer.lastSent = undefined; }
   });
   dispatch.hook('S_REMOVE_BLOCKED_USER', 1, (event) => {
-    let { client } = bridgeServer;
+    let { client } = bridgeServer, b = (bridgeServer.lastSent == client.api.types.BLOCK);
     if (!client) { return; }
-    client.api.unblock(event.id);
+    client.api.unblock(event.id, b);
+    if (b) { bridgeServer.lastSent = undefined; }
   });
   dispatch.hook('S_USER_BLOCK_LIST', 2, (event) => {
     let { client } = bridgeServer;
@@ -337,7 +351,8 @@ module.exports = function DiscordBridge(dispatch) {
     let message = dispatch.parseSystemMessage(event.message);
     if (bridgeServer.lastSent !== false) {
       if (message.id == 'SMT_CHAT_INPUTRESTRICTION_ERROR') { client.api.badSend(); }
-      else if ((message.id == 'SMT_GENERAL_NOT_IN_THE_WORLD') && (bridgeServer.lastSent == client.api.types.WHISP)) { client.api.noExist(); }
+      else if ((message.id == 'SMT_GENERAL_NOT_IN_THE_WORLD') && (bridgeServer.lastSent == client.api.types.WHISP)) { client.api.noExistWhisp(); }
+      else if ((message.id == 'SMT_FRIEND_NOT_EXIST_USER') && (bridgeServer.lastSent == client.api.types.BLOCK)) { client.api.noExistBlock(); }
     }
   });
   dispatch.command.add('discordbridge', {

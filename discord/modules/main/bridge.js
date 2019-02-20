@@ -133,6 +133,53 @@ let trigs = {
         this._proxy.lastSource = c;
       }
     });
+  },
+  /* HELP
+  ## DESC Block a specified person
+  ## CMD #PREFIX#block <name>
+  ## OWNER
+  ## ARGS
+  ##   <name> - Who to block
+  ## ENDARGS
+  */
+  block: function (m) {
+    if (this.auth.owner != m.author.id) { m.reply('You don\'t have permission to do that'); return; }
+    if (m.words.length == 1) { m.reply('Who do you want to block?'); return; }
+    let { client } = this._proxy, who = cleanMsg(m.words[1]).substr(0,20);
+    if (!who) { m.reply('Who do you want to block?'); return; }
+    client.api.block(who);
+    this._proxy.lastSource = m.channel;
+  },
+  /* HELP
+  ## DESC Unblock a specified person
+  ## CMD #PREFIX#unblock <name>
+  ## OWNER
+  ## ARGS
+  ##   <name> - Who to unblock
+  ## ENDARGS
+  */
+  unblock: function (m) {
+    if (this.auth.owner != m.author.id) { m.reply('You don\'t have permission to do that'); return; }
+    if (m.words.length == 1) { m.reply('Who do you want to unblock?'); return; }
+    let { client } = this._proxy, who = cleanMsg(m.words[1]).substr(0,20);
+    if (!who) { m.reply('Who do you want to unblock?'); return; }
+    client.api.unblock(who);
+    this._proxy.lastSource = m.channel;
+  },
+  /* HELP
+  ## DESC View your block list
+  ## CMD #PREFIX#blocked
+  ## OWNER
+  */
+  blocked: function (m) {
+    if (this.auth.owner != m.author.id) { m.reply('You don\'t have permission to do that'); return; }
+    let { blocked } = this._proxy, out = '';
+    if (blocked.length == 0) { m.channel.send('Block list is empty'); return; }
+    for (let i = 0, l = blocked.length; i < l; i+=2) {
+      out += blocked[i].name.padStart(20);
+      if (blocked[i+1]) { out += ' '+blocked[i+1].name.padStart(20); }
+    }
+    m.channel.send(out);
   }
 };
 function saveChanmap(bot) {
@@ -167,6 +214,7 @@ function findChanType(bot, id) {
   for (let i = 0, list = chanmap['privates'], l = list.length; i < l; i++) { if (list[i].id == id) { return types.PRIV; } }
   return undefined;
 }
+function cleanMsg(m) { return emoji.unemojify(m.replace(/\[/g, '{').replace(/\]/g, '}')); }
 function sendMsg(client, type, target, msg) {
   let ret = true, m = msg;
   if (m.length > 300) { m = m.substr(0, 300); ret = false; }
@@ -187,7 +235,7 @@ function handleMsgs(m) {
   if (m.channel.__muted) { m.channel.send('Shh, you\'re still muted'); return; }
   let msgs = m.cleanContent.split('\n');
   for (let i = 0, l = msgs.length; i < l; i++) {
-    let msg = emoji.unemojify(msgs[i].replace(/\[/g, '{').replace(/\]/g, '}'));
+    let msg = cleanMsg(msgs[i]);
     if (msg.replace(/\s*/g, '') === '') { continue; }
     setTimeout(() => {
       let cname = m.channel.name;
@@ -233,7 +281,7 @@ function setupProxy(bot) {
   client.on('ready', function () {
     this.loadApi();
     this.api.on('msg', function (type, target, from, msg) {
-      let { types } = this, { chanmap, settings } = bot._proxy, { blocked } = settings, m = patchMessage(msg);
+      let { types } = this, { chanmap, settings, blocked } = bot._proxy, m = patchMessage(msg);
       for (let i = 0, l = blocked.length, lcfrom = from.toLowerCase(); i < l; i++) { if (blocked[i].name.toLowerCase() == lcfrom) { return; } }
       switch (type) {
         case types.WHISP:
@@ -318,9 +366,13 @@ function setupProxy(bot) {
       let { lastSource } = bot._proxy;
       lastSource.send('The previous message was reject by the TERA server');
     });
-    this.api.on('no exist', function () {
+    this.api.on('no exist whisp', function () {
       let { lastSource } = bot._proxy;
       lastSource.send('This character is not online');
+    });
+    this.api.on('no exist block', function () {
+      let { lastSource } = bot._proxy;
+      lastSource.send('That chracter doesn\'t exist');
     });
     this.api.on('muted', function (channel, status) {
       let { settings, chanmap } = bot._proxy, { enabled } = settings;
@@ -329,26 +381,25 @@ function setupProxy(bot) {
       if (status) { chanmap[channel].send('You\'ve been muted from this chat. For shame.'); }
       else { chanmap[channel].send('Your mute has been lifted!'); }
     });
-    this.api.on('block', function (id, name) {
-      let { blocked } = bot._proxy.settings;
-      for (let i = 0, l = blocked.length; i < l; i++) { if (blocked[i].id == id) { return; } }
+    this.api.on('block', function (id, name, alert) {
+      let { blocked, lastSource } = bot._proxy;
+      for (let i = 0, l = blocked.length; i < l; i++) { if (blocked[i].id == id) { if (alert) { lastSource.send(`${name} is already blocked`); } return; } }
       blocked.push({ id, name });
-      bot.saveData('settings', bot._proxy.settings);
+      if (alert) { lastSource.send(`Blocked ${name}`); }
     });
-    this.api.on('unblock', function (id) {
-      let { blocked } = bot._proxy.settings;
-      for (let i = 0, l = blocked.length; i < l; i++) { if (blocked[i].id == id) { blocked.splice(i, 1); break; } }
-      bot.saveData('settings', bot._proxy.settings);
+    this.api.on('unblock', function (id, alert) {
+      let { blocked, lastSource } = bot._proxy, res = false;
+      for (let i = 0, l = blocked.length; i < l; i++) { if (blocked[i].id == id) { blocked.splice(i, 1); res = true; break; } }
+      if (alert) { lastSource.send(res?`Unblocked ${name}`:`${name} wasn't blocked`); }
     });
     this.api.on('block list', function (list) {
-      let { blocked } = bot._proxy.settings, skip;
+      let { blocked } = bot._proxy, skip;
       for (let i = 0, l = list.length; i < l; i++) {
         skip = false;
         for (let x = 0, xl = blocked.length; x < xl; x++) { if (blocked[x].id == list[i].id) { skip = true; break; } }
         if (skip) { continue; }
         blocked.push({ id: list[i].id, name: list[i].name });
       }
-      bot.saveData('settings', bot._proxy.settings);
     });
   });
   bot._proxy.client = client;
@@ -357,10 +408,9 @@ function setupProxy(bot) {
 function load(bot) {
   bot.addTriggers(trigs);
   bot.on('message', handleMsgs);
-  bot._proxy = { privs: {}, avail: { party: false, raid: false } };
+  bot._proxy = { privs: {}, avail: { party: false, raid: false }, blocked: [] };
   try { bot._proxy.settings = bot.loadData('settings'); }
   catch (e) { bot._proxy.settings = { keepparty: true, enabled: { say: true, area: true, party: true, raid: true, guild: true, trade: true, global: true, privates: true, whispers: true, friends: true } }; bot.saveData('settings', bot._proxy.settings); }
-  if (!bot._proxy.settings.blocked) { bot._proxy.settings.blocked = []; } // TODO remove soon
   setupServer(bot)
   .then((chanmap) => {
     let saveMap = false;

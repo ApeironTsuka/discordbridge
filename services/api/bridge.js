@@ -3,7 +3,8 @@ const { EventEmitter } = require('events');
 const types = {
   WHISP: 0,
   PRIV: 1,
-  CHAN: 2
+  CHAN: 2,
+  BLOCK: 3
 };
 
 class proxyClientApi extends EventEmitter {
@@ -20,14 +21,17 @@ class proxyClientApi extends EventEmitter {
     emitter.on('party update', function (d) { api.emit('party update', d.upd); });
     emitter.on('fl update', function (d) { api.emit('fl update', d.upd); });
     emitter.on('bad send', function () { api.emit('bad send'); });
-    emitter.on('no exist', function () { api.emit('no exist'); });
+    emitter.on('no exist whisp', function () { api.emit('no exist whisp'); });
+    emitter.on('no exist block', function () { api.emit('no exist block'); });
     emitter.on('muted', function (d) { api.emit('muted', d.status, d.msg); });
-    emitter.on('block', function (d) { api.emit('block', d.id, d.name); });
-    emitter.on('unblock', function (d) { api.emit('unblock', d.id); });
+    emitter.on('block', function (d) { api.emit('block', d.id, d.name, d.alert); });
+    emitter.on('unblock', function (d) { api.emit('unblock', d.id, d.alert); });
     emitter.on('block list', function (d) { api.emit('block list', d.list); });
     this.types = types;
   }
   sendMessage(type, target, msg) { this.emitter.send({ event: 'msg', data: { type, target, msg }, replyExpected: false }); }
+  block(name) { this.emitter.send({ event: 'block', data: { name }, replyExpected: false }); }
+  unblock(name) { this.emitter.send({ event: 'unblock', data: { name }, replyExpected: false }); }
 }
 
 class proxyServerApi extends EventEmitter {
@@ -47,10 +51,11 @@ class proxyServerApi extends EventEmitter {
   partyUpdate(upd) { this.emitter.send({ event: 'party update', data: { upd }, replyExpected: false }); }
   flUpdate(upd) { this.emitter.send({ event: 'fl update', data: { upd }, replyExpected: false }); }
   badSend() { this.emitter.send({ event: 'bad send', data: {}, replyExpected: false }); }
-  noExist() { this.emitter.send({ event: 'no exist', data: {}, replyExpected: false }); }
+  noExistWhisp() { this.emitter.send({ event: 'no exist whisp', data: {}, replyExpected: false }); }
+  noExistBlock() { this.emitter.send({ event: 'no exist block', data: {}, replyExpected: false }); }
   muted(status, msg) { this.emitter.send({ event: 'muted', data: { status, msg }, replyExpected: false }); }
-  block(id, name) { this.emitter.send({ event: 'block', data: { id, name }, replyExpected: false }); }
-  unblock(id) { this.emitter.send({ event: 'unblock', data: { id }, replyExpected: false }); }
+  block(id, name, alert) { this.emitter.send({ event: 'block', data: { id, name, alert }, replyExpected: false }); }
+  unblock(id, alert) { this.emitter.send({ event: 'unblock', data: { id, alert }, replyExpected: false }); }
   blockList(list) { this.emitter.send({ event: 'block list', data: { list }, replyExpected: false }); }
   silence() {
     this.emitter._send = this.emitter.send;
