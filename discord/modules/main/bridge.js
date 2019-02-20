@@ -375,7 +375,7 @@ function setupProxy(bot) {
       lastSource.send('That chracter doesn\'t exist');
     });
     this.api.on('muted', function (channel, status) {
-      let { settings, chanmap } = bot._proxy, { enabled } = settings;
+      let { settings, chanmap } = bot._proxy;
       if (!chanmap[channel]) { return; }
       chanmap[channel].__muted = status;
       if (status) { chanmap[channel].send('You\'ve been muted from this chat. For shame.'); }
@@ -400,6 +400,18 @@ function setupProxy(bot) {
         if (skip) { continue; }
         blocked.push({ id: list[i].id, name: list[i].name });
       }
+    });
+    this.api.on('guild login', function (name, comment) {
+      let { settings, chanmap } = bot._proxy, { enabled } = settings;
+      if (!chanmap.guild) { return; }
+      if (!enabled.guild) { return; }
+      chanmap.guild.send(`${name} has logged in${comment?'. Message: '+comment:''}`);
+    });
+    this.api.on('guild logout', function (name) {
+      let { settings, chanmap } = bot._proxy, { enabled } = settings;
+      if (!chanmap.guild) { return; }
+      if (!enabled.guild) { return; }
+      chanmap.guild.send(`${name} has logged out`);
     });
   });
   bot._proxy.client = client;

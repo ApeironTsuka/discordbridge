@@ -27,6 +27,8 @@ class proxyClientApi extends EventEmitter {
     emitter.on('block', function (d) { api.emit('block', d.id, d.name, d.alert); });
     emitter.on('unblock', function (d) { api.emit('unblock', d.id, d.alert); });
     emitter.on('block list', function (d) { api.emit('block list', d.list); });
+    emitter.on('guild login', function (d) { api.emit('guild login', d.name, d.comment); });
+    emitter.on('guild logout', function (d) { api.emit('guild logout', d.name); });
     this.types = types;
   }
   sendMessage(type, target, msg) { this.emitter.send({ event: 'msg', data: { type, target, msg }, replyExpected: false }); }
@@ -57,6 +59,8 @@ class proxyServerApi extends EventEmitter {
   block(id, name, alert) { this.emitter.send({ event: 'block', data: { id, name, alert }, replyExpected: false }); }
   unblock(id, alert) { this.emitter.send({ event: 'unblock', data: { id, alert }, replyExpected: false }); }
   blockList(list) { this.emitter.send({ event: 'block list', data: { list }, replyExpected: false }); }
+  guildLogin(name, comment) { this.emitter.send({ event: 'guild login', data: { name, comment }, replyExpected: false }); }
+  guildLogout(name) { this.emitter.send({ event: 'guild logout', data: { name }, replyExpected: false }); }
   silence() {
     this.emitter._send = this.emitter.send;
     this.emitter.send = function (...args) { if (this.silenced) { return; } this._send(...args); };

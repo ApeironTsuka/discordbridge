@@ -350,9 +350,19 @@ module.exports = function DiscordBridge(dispatch) {
     if (!client) { return; }
     let message = dispatch.parseSystemMessage(event.message);
     if (bridgeServer.lastSent !== false) {
-      if (message.id == 'SMT_CHAT_INPUTRESTRICTION_ERROR') { client.api.badSend(); }
-      else if ((message.id == 'SMT_GENERAL_NOT_IN_THE_WORLD') && (bridgeServer.lastSent == client.api.types.WHISP)) { client.api.noExistWhisp(); }
-      else if ((message.id == 'SMT_FRIEND_NOT_EXIST_USER') && (bridgeServer.lastSent == client.api.types.BLOCK)) { client.api.noExistBlock(); }
+      let { types } = client.api;
+      switch (message.id) {
+        case 'SMT_CHAT_INPUTRESTRICTION_ERROR': client.api.badSend(); break;
+        case 'SMT_GENERAL_NOT_IN_THE_WORLD': if (bridgeServer.lastSent == types.WHISP) { client.api.noExistWhisp(); } break;
+        case 'SMT_FRIEND_NOT_EXIST_USER': if (bridgeServer.lastSent == types.BLOCK) { client.api.noExistBlock(); } break;
+        default: break;
+      }
+    }
+    switch (message.id) {
+      case 'SMT_GUILD_MEMBER_LOGON':
+      case 'SMT_GUILD_MEMBER_LOGON_NO_MESSAGE': client.api.guildLogin(message.UserName, message.Comment); break;
+      case 'SMT_GUILD_MEMBER_LOGOUT': client.api.guildLogout(message.UserName); break;
+      default: break;
     }
   });
   dispatch.command.add('discordbridge', {
