@@ -360,8 +360,8 @@ module.exports = function DiscordBridge(dispatch) {
     }
     switch (message.id) {
       case 'SMT_GUILD_MEMBER_LOGON':
-      case 'SMT_GUILD_MEMBER_LOGON_NO_MESSAGE': client.api.guildLogin(message.UserName, message.Comment); break;
-      case 'SMT_GUILD_MEMBER_LOGOUT': client.api.guildLogout(message.UserName); break;
+      case 'SMT_GUILD_MEMBER_LOGON_NO_MESSAGE': client.api.guildLogin(message.tokens.UserName, message.tokens.Comment); break;
+      case 'SMT_GUILD_MEMBER_LOGOUT': client.api.guildLogout(message.tokens.UserName); break;
       default: break;
     }
   });
