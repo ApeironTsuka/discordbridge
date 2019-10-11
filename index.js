@@ -20,16 +20,16 @@ function attachEvents(c) {
           case 'global': channel = 27; break;
           default: return;
         }
-        prox.dispatch.toServer('C_CHAT', 1, { channel, message });
+        prox.mod.toServer('C_CHAT', 1, { channel, message });
         bridgeServer.lastSent = d.type;
         break;
       case types.WHISP:
-        prox.dispatch.toServer('C_WHISPER', 1, { target, message });
+        prox.mod.toServer('C_WHISPER', 1, { target, message });
         bridgeServer.lastSent = d.type;
         break;
       case types.PRIV:
         if (!bridgeServer.privs.names[target]) { return; }
-        prox.dispatch.toServer('C_CHAT', 1, { channel: 11+bridgeServer.privs.names[target].ind, message });
+        prox.mod.toServer('C_CHAT', 1, { channel: 11+bridgeServer.privs.names[target].ind, message });
         bridgeServer.lastSent = d.type;
         break;
       default: return;
@@ -38,13 +38,13 @@ function attachEvents(c) {
   c.on('block', function (d) {
     let types = c.api.types;
     let { name } = d;
-    prox.dispatch.toServer('C_BLOCK_USER', 1, { name });
+    prox.mod.toServer('C_BLOCK_USER', 1, { name });
     bridgeServer.lastSent = types.BLOCK;
   });
   c.on('unblock', function (d) {
     let types = c.api.types;
     let { name } = d;
-    prox.dispatch.toServer('C_REMOVE_BLOCKED_USER', 1, { name });
+    prox.mod.toServer('C_REMOVE_BLOCKED_USER', 1, { name });
     bridgeServer.lastSent = types.BLOCK;
   });
   let settings = bridgeServer.settings;
@@ -67,12 +67,12 @@ function idToChan(id) {
 }
 
 class bridgeServer {
-  constructor(emitter, dispatch) { this.emitter = emitter; this.dispatch = dispatch; }
+  constructor(emitter, mod) { this.emitter = emitter; this.mod = mod; }
   begin() { this.emitter.on('connection', attachEvents.bind(this)); }
-  static init(dispatch) {
+  static init(mod) {
     let e = new serviceEmitter(), server;
     e.init('bridge', { keep: true });
-    server = new bridgeServer(e, dispatch);
+    server = new bridgeServer(e, mod);
     server.begin();
     bridgeServer.inst = server;
     bridgeServer.running = true;
@@ -169,7 +169,7 @@ class PartyManager {
   }
   clear() { this.list.clear(); this.type = 'none'; }
 }
-module.exports = function DiscordBridge(dispatch) {
+module.exports = function DiscordBridge(mod) {
   if (bridgeServer.running) { console.log('Only the first loaded TERA instance can use Discord'); return; }
   let emitter, types, settings = bridgeServer.settings = {}, privs = bridgeServer.privs = { names: {}, ids: {} };
   let discordPath = `${__dirname}/discord`, fs = require('fs');
@@ -191,40 +191,40 @@ module.exports = function DiscordBridge(dispatch) {
     console.error('Error loading discord/auth config file. Usually this is because of missing "" around owner or token.');
     return;
   }
-  bridgeServer.init(dispatch);
+  bridgeServer.init(mod);
   settings.raid = settings.party = false;
   bridgeServer.discord = require('child_process').fork(`${discordPath}/main.js`, [ bridgeServer.inst.emitter.port ], { cwd: discordPath });
   this.destructor = function () { bridgeServer.destroy(); };
-  dispatch.hook('C_CHAT', 1, (event) => {
+  mod.hook('C_CHAT', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     bridgeServer.lastSent = false;
   });
-  dispatch.hook('C_WHISPER', 1, (event) => {
+  mod.hook('C_WHISPER', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     bridgeServer.lastSent = false;
   });
-  dispatch.hook('S_CHAT', 2, (event) => {
+  mod.hook('S_CHAT', 3, (event) => {
     let { client } = bridgeServer, target;
     if (!client) { return; }
     target = idToChan(event.channel);
     if (!target) { return; }
-    client.api.msg(client.api.types.CHAN, target, event.authorName, event.message);
+    client.api.msg(client.api.types.CHAN, target, event.name, event.message);
   });
-  dispatch.hook('S_WHISPER', 2, (event) => {
+  mod.hook('S_WHISPER', 3, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
-    if (event.authorName == dispatch.game.me.name) { client.api.msg(client.api.types.WHISP, event.authorName, event.recipient, event.message); }
-    else { client.api.msg(client.api.types.WHISP, undefined, event.authorName, event.message); }
+    if (event.authorName == mod.game.me.name) { client.api.msg(client.api.types.WHISP, event.name, event.recipient, event.message); }
+    else { client.api.msg(client.api.types.WHISP, undefined, event.name, event.message); }
   });
-  dispatch.hook('S_JOIN_PRIVATE_CHANNEL', 2, (event) => {
+  mod.hook('S_JOIN_PRIVATE_CHANNEL', 2, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     privs.ids[event.channelId] = privs.names[event.name] = { id: event.channelId, ind: event.index, name: event.name };
     client.api.privJoin(event.name);
   });
-  dispatch.hook('S_LEAVE_PRIVATE_CHANNEL', 2, (event) => {
+  mod.hook('S_LEAVE_PRIVATE_CHANNEL', 2, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     let n = privs.ids[event.channelId].name;
@@ -232,15 +232,15 @@ module.exports = function DiscordBridge(dispatch) {
     delete privs.ids[event.channelId];
     delete privs.names[n];
   });
-  dispatch.hook('S_PRIVATE_CHAT', 1, (event) => {
+  mod.hook('S_PRIVATE_CHAT', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     client.api.msg(client.api.types.PRIV, privs.ids[event.channel].name, event.authorName, event.message);
   });
-  dispatch.hook('S_PRIVATE_CHANNEL_NOTICE', 2, (event) => {
+  mod.hook('S_PRIVATE_CHANNEL_NOTICE', 2, (event) => {
     let { client } = bridgeServer, ev = event.event;
     if (!client) { return; }
-    ev = dispatch.parseSystemMessage(`@${ev}`);
+    ev = mod.parseSystemMessage(`@${ev}`);
     switch (ev.id) {
       case 'SMT_PRIVATE_CHANNEL_ENTER':
         client.api.privNotice(privs.ids[event.channelId].name, 'enter', event.name);
@@ -265,7 +265,7 @@ module.exports = function DiscordBridge(dispatch) {
     }
     client.api.partyUpdate(out);
   });
-  dispatch.hook('S_PARTY_MEMBER_LIST', 7, (event) => {
+  mod.hook('S_PARTY_MEMBER_LIST', 7, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     settings.party = true;
@@ -273,7 +273,7 @@ module.exports = function DiscordBridge(dispatch) {
     client.api.partyStatus(true, event.raid);
     partyManager.update(event);
   });
-  dispatch.hook('S_LEAVE_PARTY', 1, (event) => {
+  mod.hook('S_LEAVE_PARTY', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     client.api.partyUpdate(`You have left the ${partyManager.type}\n`);
@@ -281,17 +281,17 @@ module.exports = function DiscordBridge(dispatch) {
     client.api.partyStatus(false, false);
     partyManager.clear();
   });
-  dispatch.hook('S_LOGOUT_PARTY_MEMBER', 1, (event) => {
+  mod.hook('S_LOGOUT_PARTY_MEMBER', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     partyManager.offline(event.playerId);
   });
-  dispatch.hook('S_LEAVE_PARTY_MEMBER', 2, (event) => {
+  mod.hook('S_LEAVE_PARTY_MEMBER', 2, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     partyManager.left(event.playerId);
   });
-  /*dispatch.hook('S_PARTY_MEMBER_INTERVAL_POS_UPDATE', 3, (event) => { // FIXME THERE MUST BE A BETTER WAY
+  /*mod.hook('S_PARTY_MEMBER_INTERVAL_POS_UPDATE', 3, (event) => { // FIXME THERE MUST BE A BETTER WAY
     let { client } = bridgeServer;
     if (!client) { return; }
     partyManager.online(event.playerId);
@@ -311,44 +311,44 @@ module.exports = function DiscordBridge(dispatch) {
     }
     client.api.flUpdate(out);
   });
-  dispatch.hook('S_UPDATE_FRIEND_INFO', 1, (event) => {
+  mod.hook('S_UPDATE_FRIEND_INFO', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     flManager.update(event);
   });
-  dispatch.hook('S_CHANGE_FRIEND_STATE', 1, (event) => {
+  mod.hook('S_CHANGE_FRIEND_STATE', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     flManager.busy(event.playerId, event.state==1);
   });
-  dispatch.hook('S_MUTE', 2, (event) => {
+  mod.hook('S_MUTE', 2, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     client.api.muted(idToChan(event.channel), event.muted);
   });
-  dispatch.hook('S_ADD_BLOCKED_USER', 2, (event) => {
+  mod.hook('S_ADD_BLOCKED_USER', 2, (event) => {
     let { client } = bridgeServer, b = (bridgeServer.lastSent == client.api.types.BLOCK);
     if (!client) { return; }
     client.api.block(event.id, event.name, b);
     if (b) { bridgeServer.lastSent = undefined; }
   });
-  dispatch.hook('S_REMOVE_BLOCKED_USER', 1, (event) => {
+  mod.hook('S_REMOVE_BLOCKED_USER', 1, (event) => {
     let { client } = bridgeServer, b = (bridgeServer.lastSent == client.api.types.BLOCK);
     if (!client) { return; }
     client.api.unblock(event.id, b);
     if (b) { bridgeServer.lastSent = undefined; }
   });
-  dispatch.hook('S_USER_BLOCK_LIST', 2, (event) => {
+  mod.hook('S_USER_BLOCK_LIST', 2, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
     let out = [];
     for (let i = 0, list = event.blockList, l = list.length; i < l; i++) { out.push({ id: list[i].id, name: list[i].name }); }
     client.api.blockList(out);
   });
-  dispatch.hook('S_SYSTEM_MESSAGE', 1, (event) => {
+  mod.hook('S_SYSTEM_MESSAGE', 1, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
-    let message = dispatch.parseSystemMessage(event.message);
+    let message = mod.parseSystemMessage(event.message);
     if (bridgeServer.lastSent !== false) {
       let { types } = client.api;
       switch (message.id) {
@@ -365,21 +365,21 @@ module.exports = function DiscordBridge(dispatch) {
       default: break;
     }
   });
-  dispatch.command.add('discordbridge', {
-    $default() { dispatch.command.message('Usage: discordbridge [on/off]. Turns on/off using the bridge.'); },
+  mod.command.add('discordbridge', {
+    $default() { mod.command.message('Usage: discordbridge [on/off]. Turns on/off using the bridge.'); },
     on() {
       let { client } = bridgeServer;
-      if (!client) { dispatch.command.message('No running Discord instance found'); return; }
+      if (!client) { mod.command.message('No running Discord instance found'); return; }
       if (client.api.silenced) { return; }
       client.api.silence();
-      dispatch.command.message('Bridge silenced. Note that the Discord instance is still running, just not being used.');
+      mod.command.message('Bridge silenced. Note that the Discord instance is still running, just not being used.');
     },
     off() {
       let { client } = bridgeServer;
-      if (!client) { dispatch.command.message('No running Discord instance found'); return; }
+      if (!client) { mod.command.message('No running Discord instance found'); return; }
       if (!client.api.silenced) { return; }
       client.api.unsilence();
-      dispatch.command.message('Bridge unsilenced. Discord will begin broadcasting again.');
+      mod.command.message('Bridge unsilenced. Discord will begin broadcasting again.');
     }
   });
 };
