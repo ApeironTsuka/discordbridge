@@ -215,7 +215,7 @@ module.exports = function DiscordBridge(mod) {
   mod.hook('S_WHISPER', 3, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
-    if (event.authorName == mod.game.me.name) { client.api.msg(client.api.types.WHISP, event.name, event.recipient, event.message); }
+    if (event.name == mod.game.me.name) { client.api.msg(client.api.types.WHISP, event.name, event.recipient, event.message); }
     else { client.api.msg(client.api.types.WHISP, undefined, event.name, event.message); }
   });
   mod.hook('S_JOIN_PRIVATE_CHANNEL', 2, (event) => {
