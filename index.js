@@ -1,5 +1,4 @@
 const { serviceEmitter } = require('tserv-service');
-
 function attachEvents(c) {
   let prox = bridgeServer.inst;
   if (bridgeServer.client) { return; }
@@ -16,8 +15,10 @@ function attachEvents(c) {
           case 'guild': channel = 2; break;
           case 'area': channel = 3; break;
           case 'trade': channel = 4; break;
+          case 'partyn': channel = 21; break;
           case 'raid': channel = 25; break;
           case 'global': channel = 27; break;
+          case 'raidn': channel = 32; break;
           default: return;
         }
         prox.mod.toServer('C_CHAT', 1, { channel, message });
@@ -117,10 +118,10 @@ class FLManager {
 }
 class PartyManager {
   constructor(cb) { this.cb = cb; this.list = new Map(); }
-  update(newlist) {
+  update(newlist, lead) {
     let { list: olist, cb } = this, t, ev = [],
         list = newlist.members, nmap = new Map();
-    function obj(p) { return { id: p.playerId, name: p.name, online: p.online }; }
+    function obj(p) { return { id: p.playerId, name: p.name, online: p.online, lead: p.playerId == lead }; }
     this.type = newlist.raid?'raid':'party';
     for (let i = 0, l = list.length; i < l; i++) {
       let p = list[i], k = obj(p);
@@ -147,17 +148,21 @@ class PartyManager {
         olist.delete(p.playerId);
       }
     }
+    //if ((this.lead != 0) && (this.lead != lead)) { ev.push({ ev: 'lead', p: this.list.get(lead) }); }
+    this.lead = lead;
     if (ev.length) { cb(ev); }
   }
   offline(pid) {
     let p = this.list.get(pid);
     if (!p) { return; }
+    if (!p.online) { return; }
     p.online = false;
     this.cb([ { ev: 'offline', p } ]);
   }
   online(pid) {
     let p = this.list.get(pid);
     if (!p) { return; }
+    if (p.online) { return; }
     p.online = true;
     this.cb([ { ev: 'online', p } ]);
   }
@@ -166,8 +171,20 @@ class PartyManager {
     if (!p) { return; }
     this.list.delete(pid);
     this.cb([ { ev: 'left', p } ]);
+    if (this.list.size == 1) {
+      this.cb([ { ev: 'left', p: this.list.values().next().value }, { ev: 'disband' } ]);
+      this.clear();
+    }
   }
-  clear() { this.list.clear(); this.type = 'none'; }
+  leader(pid) {
+    let pc = this.list.get(this.lead), p = this.list.get(pid);
+    if ((!pc) || (!p)) { return; }
+    pc.lead = false;
+    p.lead = true;
+    this.lead = pid;
+    this.cb([ { ev: 'lead', p } ]);
+  }
+  clear() { this.list.clear(); this.type = 'none'; this.lead = 0; }
 }
 module.exports = function DiscordBridge(mod) {
   if (bridgeServer.running) { console.log('Only the first loaded TERA instance can use Discord'); return; }
@@ -260,6 +277,12 @@ module.exports = function DiscordBridge(mod) {
         case 'offline': out += `${evs[i].p.name} has gone offline\n`; break;
         case 'join': out += `${evs[i].p.name} has joined the ${partyManager.type}\n`; break;
         case 'left': out += `${evs[i].p.name} has left the ${partyManager.type}\n`; break;
+        case 'lead': out += `${evs[i].p.name} is now ${partyManager.type} lead\n`; break;
+        case 'disband':
+          settings.party = settings.raid = false;
+          client.api.partyStatus(false, false);
+          out += `${partyManager.type} disbanded\n`;
+          break;
         default: continue;
       }
     }
@@ -271,7 +294,7 @@ module.exports = function DiscordBridge(mod) {
     settings.party = true;
     settings.raid = event.raid;
     client.api.partyStatus(true, event.raid);
-    partyManager.update(event);
+    partyManager.update(event, event.leaderPlayerId);
   });
   mod.hook('S_LEAVE_PARTY', 1, (event) => {
     let { client } = bridgeServer;
@@ -291,11 +314,12 @@ module.exports = function DiscordBridge(mod) {
     if (!client) { return; }
     partyManager.left(event.playerId);
   });
-  /*mod.hook('S_PARTY_MEMBER_INTERVAL_POS_UPDATE', 3, (event) => { // FIXME THERE MUST BE A BETTER WAY
+  mod.hook('S_CHANGE_PARTY_MANAGER', 2, (event) => {
     let { client } = bridgeServer;
     if (!client) { return; }
-    partyManager.online(event.playerId);
-  });*/
+    client.api.partyLead(mod.game.me.name == event.name);
+    partyManager.leader(event.playerId);
+  });
   let flManager = bridgeServer.flManager = new FLManager((evs) => {
     let out = '', { client } = bridgeServer;
     if (!client) { return; }
@@ -364,6 +388,14 @@ module.exports = function DiscordBridge(mod) {
       case 'SMT_GUILD_MEMBER_LOGOUT': client.api.guildLogout(message.tokens.UserName); break;
       default: break;
     }
+  });
+  mod.hook('S_RETURN_TO_LOBBY', 1, (event) => {
+    let { client } = bridgeServer;
+    if (!client) { return; }
+    if ((!settings.party) || (!settings.raid)) { return; }
+    settings.party = settings.raid = false;
+    client.api.partyStatus(false, false);
+    partyManager.clear();
   });
   mod.command.add('discordbridge', {
     $default() { mod.command.message('Usage: discordbridge [on/off]. Turns on/off using the bridge.'); },

@@ -5,27 +5,27 @@
     "discord/modules/main/core/services.js": "874574199051e2d9797fb6048b809976335665296851f19cd9d2dda86e7fd7aa",
     "discord/modules/main/core/triggers.js": "a84f7e6faab7253d2999981624ab19aa546407edd40e65ddcea9d09c21926938",
     "discord/modules/main/help.js": "3126755b155c17a3a96bb6f627adcb6983a55caefc89fd54bbfd9d77b270ccbc",
-    "discord/modules/main/bridge.js": "fc30624aee93e7bae350feb9da7ba62ac0b1bbe82c016d144b3c9d1b62966339",
+    "discord/modules/main/bridge.js": "4354732408c6824475188f828e4b2735aa0699468b05552d05bffb3d57f03c81",
     "discord/modules/main/system.js": "f9bb091960f5778123c3b4dbd5dc2aecaa1ee3dd50137bb8801fd0235c0a89a9",
     "discord/node_modules/tserv-modsupport/main.js": "f0ded9181be795b249be62bb6e61f526c9bcfe3b0254fc7e2d9d8f466ffcdf8e",
     "discord/node_modules/tserv-modsupport/package.json": "bef37934b3a5c684cf441d179f82e22ccb8a110e2b2903a62e2d0cb726402e55",
     "discord/node_modules/tserv-service/main.js": "51149a7b3b568870c4bb6f0c474909440f0a4f5c02f18c70c9ed66df6dd970f9",
     "discord/node_modules/tserv-service/package.json": "37244f20e93d3ee025c0acb673abbb564b14de1d11e776c49653df343382e5c8",
-    "discord/services/api/bridge.js": "c855f03c161c735eef36cc001d6864ebd92b12160c828589cc3f798e4845323c",
+    "discord/services/api/bridge.js": "e2fbdff4c171e8ce672bf6e29fa9895c80dc0bc3eaf80840dced798156b18d1c",
     "discord/main.js": "dbe09f81e55911725b9bb188e5f5b9a657da6c628be472b34fd4a31777cb61ee",
     "discord/package.json": "7c47e7550b42456e6b8c6985af00be603466649b4f92d0b00f4a77aea32071ef",
-    "discord/package-lock.json": "6f401e34bea33f89ca09a79b011d409626b383e37d8fbfbf990846505a1a3265",
+    "discord/package-lock.json": "59cb37d32e2bafb10a5b29598956d8b0a833e31a46bf7bdd1f4f310c9aef4fd6",
     "discord/auth": {
       "overwrite": false,
       "hash": "3c62e3afaf83234519b862ffc3dc6ccda881448327f0701d1af00ddd86106801"
     },
     "node_modules/tserv-service/main.js": "51149a7b3b568870c4bb6f0c474909440f0a4f5c02f18c70c9ed66df6dd970f9",
     "node_modules/tserv-service/package.json": "37244f20e93d3ee025c0acb673abbb564b14de1d11e776c49653df343382e5c8",
-    "services/api/bridge.js": "c855f03c161c735eef36cc001d6864ebd92b12160c828589cc3f798e4845323c",
-    "index.js": "08277715b1410a23fd354fde135cbd97ab50e966b0e2276d17312a28edfd80d0",
+    "services/api/bridge.js": "e2fbdff4c171e8ce672bf6e29fa9895c80dc0bc3eaf80840dced798156b18d1c",
+    "index.js": "d4752182befe1fbb90974f8906405b561491f921b05fc26af274cccc7f0311ae",
     "module.json": "c1d51a9eb1f4a569ab5b7fec03632fecccee3c34d365a651671c0f04136e8ea7",
     "package.json": "727fffa6e7479cce7bab6cefe42c0479d20a1a798bcb607ad5ca55d36e29d8e9",
-    "README": "1514c634c36ffffb4c560480f9d6c4750e232595b4deb2354953c8af3da415f3"
+    "README": "8ce5ba16959088190dd46922590b02ab60cd95ae0b61a8e78a6231d288ae2c60"
   },
   "defs": {
     "C_CHAT": 1,
@@ -42,12 +42,14 @@
     "S_LEAVE_PARTY": 1,
     "S_LOGOUT_PARTY_MEMBER": 1,
     "S_LEAVE_PARTY_MEMBER": 2,
+    "S_CHANGE_PARTY_MANAGER": 2,
     "S_UPDATE_FRIEND_INFO": 1,
     "S_CHANGE_FRIEND_STATE": 1,
     "S_ADD_BLOCKED_USER": 2,
     "S_REMOVE_BLOCKED_USER": 1,
     "S_USER_BLOCK_LIST": 2,
     "S_MUTE": 2,
-    "S_SYSTEM_MESSAGE": 1
+    "S_SYSTEM_MESSAGE": 1,
+    "S_RETURN_TO_LOBBY": 1
   }
 }

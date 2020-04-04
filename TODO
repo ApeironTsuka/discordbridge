@@ -26,3 +26,4 @@ maybe a way to make/join priv channels?
   SMT_CHAT_JUST_INPUT_PASSWORD 978
   SMT_CHAT_CHANGE_PASSWORD 979
 
+Fix friend status updates (mostly busy/online switching)

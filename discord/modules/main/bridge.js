@@ -180,6 +180,32 @@ let trigs = {
       if (blocked[i+1]) { out += ' '+blocked[i+1].name.padStart(20); }
     }
     m.channel.send(out);
+  },
+  /* HELP
+  ## DESC Send a party/raid notice
+  ## CMD #PREFIX#notice <msg>
+  ## OWNER
+  ## ARGS
+  ##   <msg> - The text to send
+  ## ENDARGS
+  */
+  notice: function (m) {
+    switch (m.channel.name) { case 'party': case 'raid': if (!this._proxy.avail[m.channel.name]) { m.channel.send(`You are not in a ${m.channel.name}`); return; } break; default: return; }
+    if (this.auth.owner != m.author.id) { m.reply('You don\'t have permission to do that'); return; }
+    if (!this._proxy.avail.lead) { m.reply(`You're not the ${m.channel.name} lead`); return; }
+    if (m.channel.__muted) { m.channel.send('Shh, you\'re still muted'); return; }
+    let msgs = m.cleanContent.split('\n'), cnane = m.channel.name + 'n', type = this._proxy.client.api.types.CHAN;
+    msgs[0] = msgs[0].substr(this.triggerPrefix.length + 7);
+    for (let i = 0, l = msgs.length; i < l; i++) {
+      let msg = cleanMsg(msgs[i]);
+      if (msg.replace(/\s*/g, '') === '') { continue; }
+      setTimeout(() => {
+        if (!sendMsg(this._proxy.client, type, cname, msg)) {
+          msg = msg.substr(0,300);
+          m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);
+        }
+      }, i*400);
+    }
   }
 };
 function saveChanmap(bot) {
@@ -241,7 +267,7 @@ function handleMsgs(m) {
       let cname = m.channel.name;
       if (!sendMsg(this._proxy.client, type, (type==types.WHISP?cname.replace(/-/g, '.'):cname), msg)) {
         msg = msg.substr(0,300);
-        m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);  
+        m.channel.send(`Max message length (300) exceeded. Only sent: ${msg}`);
       }
     }, i*400);
   }
@@ -349,6 +375,7 @@ function setupProxy(bot) {
         bot.server.createChannel('raid', 'text')
         .then((c) => { chanmap.raid = c; saveChanmap(bot); return c.setParent(chanmap.chats); });
       }
+      if ((party == raid) && (party == false)) { avail.lead = false; }
     });
     this.api.on('party update', function (upd) {
       let { avail, settings, chanmap } = bot._proxy, c;
@@ -357,6 +384,7 @@ function setupProxy(bot) {
       if (!c) { return; }
       c.send(upd);
     });
+    this.api.on('party lead', function (isMe) { bot._proxy.avail.lead = isMe; });
     this.api.on('fl update', function (upd) {
       let { settings, chanmap } = bot._proxy;
       if (!settings.enabled.friends) { return; }

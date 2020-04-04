@@ -19,6 +19,7 @@ class proxyClientApi extends EventEmitter {
     emitter.on('priv list', function (d) { api.emit('priv list', d.privs); });
     emitter.on('party status', function (d) { api.emit('party status', d.party, d.raid); });
     emitter.on('party update', function (d) { api.emit('party update', d.upd); });
+    emitter.on('party lead', function (d) { api.emit('party lead', d.isMe); });
     emitter.on('fl update', function (d) { api.emit('fl update', d.upd); });
     emitter.on('bad send', function () { api.emit('bad send'); });
     emitter.on('no exist whisp', function () { api.emit('no exist whisp'); });
@@ -51,6 +52,7 @@ class proxyServerApi extends EventEmitter {
   privList(privs) { this.emitter.send({ event: 'priv list', data: { privs }, replyExpected: false }); }
   partyStatus(party, raid) { this.emitter.send({ event: 'party status', data: { party, raid }, replyExpected: false }); }
   partyUpdate(upd) { this.emitter.send({ event: 'party update', data: { upd }, replyExpected: false }); }
+  partyLead(isMe) { this.emitter.send({ event: 'party lead', data: { isMe }, replyExpected: false }); }
   flUpdate(upd) { this.emitter.send({ event: 'fl update', data: { upd }, replyExpected: false }); }
   badSend() { this.emitter.send({ event: 'bad send', data: {}, replyExpected: false }); }
   noExistWhisp() { this.emitter.send({ event: 'no exist whisp', data: {}, replyExpected: false }); }

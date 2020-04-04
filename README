@@ -21,28 +21,24 @@ Discord side:
   Copy this link http://discordapp.com/api/oauth2/authorize?scope=bot&permissions=8&client_id= and paste client ID at the end, then go to it
   Add the bot to the server you created earlier
 
-Proxy side:
-  Create the folder [proxy]\mods\discordbridge and place module.json in it
-  Start Proxy
+Toolbox side:
+  Create the folder [toolbox]\mods\discordbridge and place module.json in it
+  Start Toolbox
   Let it install/update this
-  Exit Proxy
-  Open a Command Prompt and enter the following commands, in order. Replace [proxy] with wherever it is you have it installed (example C:\Caali Proxy\mods\discordbridge\discord)
-    cd [proxy]\mods\discordbridge\discord
+  Open a Command Prompt and enter the following commands, in order. Replace [toolbox] with wherever it is you have it installed (example C:\Caali Toolbox\mods\discordbridge\discord)
+    cd [toolbox]\mods\discordbridge\discord
     npm install
     cd ..
     npm install
   Assuming the above went okay, close Command Prompt
-  Open [proxy]\mods\discordbridge\discord\auth
+  Open [toolbox]\mods\discordbridge\discord\auth
   Paste the token and your client ID from Notepad into the "" for sekrit and owner
-  Start Proxy back up again and go to the character select screen
+  Start TERA and go to the character select screen
   If it complains about the following...
-     ... S_PRIVATE_CHANNEL_NOTICE missing, add the line "S_PRIVATE_CHANNEL_NOTICE = 55697" to [proxy]\node_modules\tera-data\map\protocol.343312.map
-     ... S_MUTE missing, add the line "S_MUTE = 42392" to [proxy]\node_modules\tera-data\map\protocol.343312.map
-     ... S_CHANGE_FRIEND_STATE missing, add the line "S_CHANGE_FRIEND_STATE = 28313" to [proxy]\node_modules\tera-data\map\protocol.343312.map
      ... Discord.js not found, make sure the Command Prompt steps above were done correctly
      ... missing owner or token in discord/auth, make sure you editted that file as stated above
      ... anything else, report it to me or the github 
-  You should see the following lines:
+  You should see the following lines (maybe):
     [discord] Logging in..
     [discord] connected 0
     [discord] Loading bot id 0
@@ -57,7 +53,7 @@ Proxy side:
   Log into a character
   You should start seeing things showing up on Discord
   Use !help on Discord to get a list of available commands
-  Use /proxy discordbridge [on/off] to turn the bridge on/off
+  Use /8 discordbridge [on/off] to turn the bridge on/off
     Note that this setting is not currently saved and only silences the bridge rather than shutting it off entirely
 
 Caveats:
